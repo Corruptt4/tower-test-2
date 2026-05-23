@@ -1,0 +1,10 @@
+html {
+    overflow: hidden
+}
+
+#canv {
+    position: absolute;
+    background-color: rgb(40, 40, 40);
+    top: 0;
+    left: 0;
+}
