@@ -24,6 +24,19 @@ export function darkenRGB(rgb, darken = 20) {
 export function minMax(min, max) {
     return Math.random() * (max - min + 1) + min
 }
+export function getAngle(x, y) {
+    return Math.atan2(y, x)
+}
+export function removeElement(element, array) {
+    return array.splice(array.indexOf(element), 1)
+}
+export function getDist(e1, e2) {
+    let dx = e1.x - e2.x
+    let dy = e1.y - e2.y
+    let dist = dx*dx+dy*dy
+
+    return dist
+}
 export function randomElement(x) {
     return Math.floor(Math.random()*x.length)
 }

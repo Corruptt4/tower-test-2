@@ -1,40 +1,68 @@
 import { Camera } from "./MODULES/camera.js"
+import { Enemy } from "./MODULES/ENTITIES/enemy.js"
 import { Tower } from "./MODULES/ENTITIES/tower.js"
+import { getAngle, removeElement } from "./MODULES/functions.js"
+import { SpatialHash } from "./MODULES/PHYSICS/spatialHash.js"
 
 function resize() {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 }
 const SPEED = 10
-let mapSize = 5000
 let keys = {}
+
+export let mapSize = 5000
 export const canvas = document.getElementById("canv"),
             ctx = canvas.getContext("2d")
 resize()
 export let world = {
+    ENTITIES: [],
     TOWERS: [],
-    ENEMIES: []
+    ENEMIES: [],
+    BULLETS: []
 }
-let tower = new Tower(
-    mapSize/2, 
-    mapSize/2, 
-    "Basic",
-    "rgb(75, 75, 75)", 30, 
-    [
-        {
-            POSITION: [0, 0],
-            SIZE: 17,
-            ANGLE: 0,
-            COLOR: "rgb(110, 110, 110)",
-            GUN_COL: "rgb(100, 100, 100)",
-            WIDTH: 8,
-            HEIGHT: 18,
-            MAX_RELOAD: 50,
-            RELOAD: 50
+export const frictionFactor = 0.93
+let spatialHash = new SpatialHash(16, mapSize)
+spatialHash.innitiateGrid()
+
+for (let i = 0; i < 1; i++) {
+    let ang = Math.PI * 2 * Math.random()
+    let dist = 800
+    let testEnemy = new Enemy(mapSize/2 + dist * Math.cos(ang), mapSize/2 - dist * Math.sin(ang), 30, 10000, 10)
+    world.ENEMIES.push(testEnemy)
+}
+for (let i = 0, s = 3; i < s; i++) {
+    let ang = ((Math.PI*2)/s)*i
+    let testTower = new Tower(
+        mapSize/2+s*13*Math.cos(ang), 
+        mapSize/2+s*13*Math.sin(ang), 
+        "Basic",
+        "rgb(75, 75, 75)", 30, []
+    )
+    testTower.turrets = ((o = []) => {
+        for (let i = 0, s = 3; i < s; i++) {
+            let ang = ((Math.PI*2)/s )* i
+            let d = 19
+            o.push({
+                POSITION: [d*Math.cos(ang), d*Math.sin(ang)],
+                SIZE: 12,
+                //                  damage,               bspeed
+                STATS: [            100,                             5             ],
+                ANGLE: 0,
+                COLOR: "rgb(110, 110, 110)",
+                GUN_COL: "rgb(100, 100, 100)",
+                WIDTH: 8,
+                HEIGHT: 18,
+                CAN_SHOOT: true,
+                BULLET_COL: "rgb(150, 255, 10)",
+                MAX_RELOAD: 10+5*i,
+                RELOAD: 0
+            })
         }
-    ]
-)
-world.TOWERS.push(tower)
+        return o
+    })()
+    world.TOWERS.push(testTower)
+}
 
 document.addEventListener("keydown", (e) => {
     keys[e.keyCode] = true
@@ -43,10 +71,54 @@ document.addEventListener("keyup", (e) => {
     keys[e.keyCode] = false
 })
 
+// no stupid context menus when you right click ig
+window.addEventListener("contextmenu", (e) => {
+    e.preventDefault()
+})
 
 const camera = new Camera(mapSize/2, mapSize/2)
 
+let collisionUpdate = setInterval(() => {
+    spatialHash.update()
+    spatialHash.clearCellEntities()
+    world.ENTITIES.forEach((entity) => {
+        if ((entity.x < 0 || entity.x + entity.size > mapSize) && (entity.y < 0 || entity.y + entity.size > mapSize)) return;
+        spatialHash.addEntity(entity)
+    })
+    spatialHash.collisions.forEach((col) => {
+        let e1 = col[0]
+        let e2 = col[1]
+        if ((e1.type == "bullet" && e2.type == "enemy") || (e1.type == "enemy" && e2.type == "bullet")) {
+            let enemy = e1.type == "enemy" ? e1 : e2
+            let bullet = e1.type == "bullet" ? e1 : e2
+            bullet.lifeTime = 0
+            enemy.health -= bullet.damage
+        }
+        if ((e1.type == "tower" && e2.type == "enemy") || (e1.type == "enemy" && e2.type == "tower")) {
+            let enemy = e1.type === "enemy" ? e1 : e2
+            let dx = e1.x - e2.x
+            let dy = e1.y - e2.y
+            let angle = getAngle(dx, dy)
+            enemy.vel.x -= 2*Math.cos(angle)
+            enemy.vel.y -= 2*Math.sin(angle)
+            return
+        }
+        if (e1.type == "enemy" && e2.type == "enemy") {
+            let dx = e1.x - e2.x
+            let dy = e1.y - e2.y
+            let angle = getAngle(dx, dy)
+            e1.vel.x += 2*Math.cos(angle)
+            e1.vel.y += 2*Math.sin(angle)
+
+            e2.vel.x -= 2*Math.cos(angle)
+            e2.vel.y -= 2*Math.sin(angle)
+            return
+        }
+    })
+}, 1000/10)
+
 let update =  setInterval(() => {
+    world.ENTITIES = world.TOWERS.concat(world.ENEMIES).concat(world.BULLETS)
     if (keys[87] || keys[38]) {
         camera.y -= SPEED
     }
@@ -60,16 +132,41 @@ let update =  setInterval(() => {
         camera.x += SPEED
     }
     camera.follow()
+    world.BULLETS.forEach((bullet) => {
+        if (bullet.health <= 0) {
+            removeElement(bullet, world.BULLETS)
+        }
+    })
     world.TOWERS.forEach((tow) => {
-        tow.update()
+        tow.targets = world.ENEMIES
+        if (tow.health <= 0) {
+            removeElement(tow, world.TOWERS)
+        }
+    })
+    world.ENEMIES.forEach((enemy) => {
+        enemy.towers = world.TOWERS
+
+        if (enemy.health <= 0) {
+            removeElement(enemy, world.ENEMIES)
+        }
+    })
+    world.ENTITIES.forEach((e) => {
+        e.update()
     })
 }, 1000/60)
 function render() {
     resize()
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     camera.apply()
-    world.TOWERS.forEach((tower) => {
-        tower.draw()
+    // spatialHash.draw()
+    world.BULLETS.forEach((e) => {
+        e.draw()
+    })
+    world.ENEMIES.forEach((e) => {
+        e.draw()
+    })
+    world.TOWERS.forEach((e) => {
+        e.draw()
     })
     requestAnimationFrame(render)
 }
