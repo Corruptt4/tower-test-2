@@ -1,7 +1,7 @@
 export function degreesToRads(x) {
     return x * (Math.PI / 180)
 }
-export function darkenRGB(rgb, darken) {
+export function darkenRGB(rgb, darken = 20) {
     if (typeof rgb !== "string") {
         console.error("Invalid input to darkenRGB:", rgb);
         return "rgb(0, 0, 0)";
