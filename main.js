@@ -4,6 +4,7 @@ import { Tower } from "./MODULES/ENTITIES/tower.js"
 import { getAngle, removeElement } from "./MODULES/functions.js"
 import { MiniMap } from "./MODULES/minimap.js"
 import { SpatialHash } from "./MODULES/PHYSICS/spatialHash.js"
+import { WaveHandler } from "./MODULES/wave.js"
 
 function resize() {
     canvas.width = window.innerWidth
@@ -27,6 +28,7 @@ export let world = {
 export const frictionFactor = 0.93
 let spatialHash = new SpatialHash(16, mapSize)
 spatialHash.innitiateGrid()
+let wave = new WaveHandler(0)
 let minimap = new MiniMap(250)
 setInterval(() => {
     for (let i = 0; i < 1; i++) {
@@ -162,6 +164,7 @@ let update =  setInterval(() => {
         e.update()
     })
     minimap.entities = world.ENTITIES
+    wave.update()
 }, 1000/60)
 function render() {
     fps++
@@ -181,6 +184,7 @@ function render() {
     })
     ctx.restore()
     minimap.draw()
+    wave.draw()
     requestAnimationFrame(render)
 }
 render()

@@ -1,11 +1,80 @@
-import { world, ctx } from "../main.js";
+import { world, ctx, mapSize } from "../main.js";
+import { Enemy } from "./ENTITIES/enemy.js";
 
 export class WaveHandler {
     constructor(startWave) {
+        this.x = 100
+        this.y = 130
+        this.ringSize = 80
         this.wave = startWave
-        this.waveMaxTimer = 60*30
-        this.waveTimer = this.waveMaxTimer
+        this.waveMaxTimer = 60*4
+        this.waveTimer = 0
         this.enemiesToSpawn = []
-        this.spawnTickDelay = 50
+        this.spawnTickDelay = 0
+    }
+    startWave() {
+        this.waveTimer = 0
+        for (let i = 0; i < 1+3*Math.max(0, this.wave-1); i++) {
+            let enemy = new Enemy(Math.random()*mapSize, Math.random()*mapSize, 30, 100*(1.5*(this.wave-1)), 10*(1.5*(this.wave-1)))
+            this.enemiesToSpawn.push(enemy)
+        }
+    }
+    draw() {
+        ctx.beginPath()
+        ctx.strokeStyle = "rgb(185, 185, 185)"
+        ctx.fillStyle = "rgba(255, 255, 255, 0.4)"
+        ctx.lineWidth = 15
+        ctx.moveTo(this.x, this.y)
+        ctx.arc(this.x, this.y, this.ringSize, Math.PI/2, Math.PI/2 + Math.PI * 2 * (this.waveTimer/this.waveMaxTimer))
+        ctx.fill()
+        ctx.closePath()
+
+        ctx.beginPath()
+        ctx.strokeStyle = "rgb(185, 185, 185)"
+        ctx.fillStyle = "rgba(255, 255, 255, 0.4)"
+        ctx.lineWidth = 15
+        ctx.arc(this.x, this.y, this.ringSize, Math.PI/2, Math.PI/2 + Math.PI * 2 * (this.waveTimer/this.waveMaxTimer))
+        ctx.stroke()
+        ctx.closePath()
+
+        ctx.beginPath()
+        ctx.lineWidth = 8
+        ctx.lineJoin = "round"
+        ctx.fillStyle = "white"
+        ctx.strokeStyle = "black"
+        ctx.font = "35px Arial"
+        ctx.textAlign = "center"
+        ctx.strokeText(this.wave, this.x, this.y+35/3)
+        ctx.fillText(this.wave, this.x, this.y+35/3)
+        ctx.closePath()
+        
+        ctx.beginPath()
+        ctx.lineWidth = 8
+        ctx.lineJoin = "round"
+        ctx.fillStyle = "white"
+        ctx.strokeStyle = "black"
+        ctx.font = "25px Arial"
+        ctx.textAlign = "center"
+        ctx.strokeText("Wave", this.x, this.y-this.ringSize-20)
+        ctx.fillText("Wave", this.x, this.y-this.ringSize-20)
+        ctx.closePath()
+    }
+    update() {
+        if (this.waveMaxTimer > this.waveTimer) {
+            this.waveTimer++
+        }
+        if (this.waveTimer >= this.waveMaxTimer) {
+            this.wave++
+            this.startWave()
+        }
+        if (this.enemiesToSpawn.length > 0) {
+            if (this.spawnTickDelay > 0) {
+                this.spawnTickDelay--
+            }
+            if (this.spawnTickDelay <= 0) {
+                this.spawnTickDelay = 60
+
+            }
+        }
     }
 }
