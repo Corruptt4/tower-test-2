@@ -45,6 +45,7 @@ export class Enemy {
     }
 
     draw() {
+        if (this.health < 0) this.health = 0;
         this.oldHealth += (this.health - this.oldHealth)*0.03
         ctx.beginPath()
         ctx.fillStyle = this.color

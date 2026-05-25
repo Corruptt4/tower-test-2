@@ -2,6 +2,7 @@ import { Camera } from "./MODULES/camera.js"
 import { Enemy } from "./MODULES/ENTITIES/enemy.js"
 import { Tower } from "./MODULES/ENTITIES/tower.js"
 import { getAngle, removeElement } from "./MODULES/functions.js"
+import { MiniMap } from "./MODULES/minimap.js"
 import { SpatialHash } from "./MODULES/PHYSICS/spatialHash.js"
 
 function resize() {
@@ -10,6 +11,8 @@ function resize() {
 }
 const SPEED = 10
 let keys = {}
+let fps = 0
+export let shownFPS = 0
 
 export let mapSize = 5000
 export const canvas = document.getElementById("canv"),
@@ -24,13 +27,15 @@ export let world = {
 export const frictionFactor = 0.93
 let spatialHash = new SpatialHash(16, mapSize)
 spatialHash.innitiateGrid()
-
-for (let i = 0; i < 1; i++) {
-    let ang = Math.PI * 2 * Math.random()
-    let dist = 800
-    let testEnemy = new Enemy(mapSize/2 + dist * Math.cos(ang), mapSize/2 - dist * Math.sin(ang), 30, 10000, 10)
-    world.ENEMIES.push(testEnemy)
-}
+let minimap = new MiniMap(250)
+setInterval(() => {
+    for (let i = 0; i < 1; i++) {
+        let ang = Math.PI * 2 * Math.random()
+        let dist = 800+Math.random()*200
+        let testEnemy = new Enemy(mapSize/2 + dist * Math.cos(ang), mapSize/2 - dist * Math.sin(ang), 30, 300, 10)
+        world.ENEMIES.push(testEnemy)
+    }
+}, 1000/2)
 for (let i = 0, s = 3; i < s; i++) {
     let ang = ((Math.PI*2)/s)*i
     let testTower = new Tower(
@@ -40,22 +45,22 @@ for (let i = 0, s = 3; i < s; i++) {
         "rgb(75, 75, 75)", 30, []
     )
     testTower.turrets = ((o = []) => {
-        for (let i = 0, s = 3; i < s; i++) {
+        for (let i = 0, s = 4; i < s; i++) {
             let ang = ((Math.PI*2)/s )* i
             let d = 19
             o.push({
                 POSITION: [d*Math.cos(ang), d*Math.sin(ang)],
-                SIZE: 12,
-                //                  damage,               bspeed
-                STATS: [            100,                             5             ],
+                SIZE: 10,
+                //         damage (base is 5),       bspeed (base is 6)
+                STATS: [            10,                             6             ],
                 ANGLE: 0,
                 COLOR: "rgb(110, 110, 110)",
                 GUN_COL: "rgb(100, 100, 100)",
-                WIDTH: 8,
-                HEIGHT: 18,
+                WIDTH: 10,
+                HEIGHT: 20,
                 CAN_SHOOT: true,
                 BULLET_COL: "rgb(150, 255, 10)",
-                MAX_RELOAD: 10+5*i,
+                MAX_RELOAD: 10,
                 RELOAD: 0
             })
         }
@@ -77,7 +82,10 @@ window.addEventListener("contextmenu", (e) => {
 })
 
 const camera = new Camera(mapSize/2, mapSize/2)
-
+setInterval(() => {
+    shownFPS = fps
+    fps = 0
+}, 1000)
 let collisionUpdate = setInterval(() => {
     spatialHash.update()
     spatialHash.clearCellEntities()
@@ -153,12 +161,15 @@ let update =  setInterval(() => {
     world.ENTITIES.forEach((e) => {
         e.update()
     })
+    minimap.entities = world.ENTITIES
 }, 1000/60)
 function render() {
+    fps++
     resize()
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    camera.apply()
     // spatialHash.draw()
+    ctx.save()
+    camera.apply()
     world.BULLETS.forEach((e) => {
         e.draw()
     })
@@ -168,6 +179,8 @@ function render() {
     world.TOWERS.forEach((e) => {
         e.draw()
     })
+    ctx.restore()
+    minimap.draw()
     requestAnimationFrame(render)
 }
 render()
