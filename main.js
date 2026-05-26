@@ -5,6 +5,8 @@ import { getAngle, removeElement } from "./MODULES/functions.js"
 import { MiniMap } from "./MODULES/minimap.js"
 import { SpatialHash } from "./MODULES/PHYSICS/spatialHash.js"
 import { WaveHandler } from "./MODULES/wave.js"
+import { towers } from "./MODULES/STORAGE/towers.js"
+import { TowerButton } from "./MODULES/UI/towerPlaceBTN.js"
 
 function resize() {
     canvas.width = window.innerWidth
@@ -13,6 +15,7 @@ function resize() {
 const SPEED = 10
 let keys = {}
 let fps = 0
+let uranium = 0
 export let shownFPS = 0
 
 export let mapSize = 5000
@@ -26,50 +29,20 @@ export let world = {
     BULLETS: []
 }
 export const frictionFactor = 0.93
+
+let towerButtons = []
+towers.forEach((struct) => {
+    let [tower, cost] = struct
+    let tBTN = new TowerButton(100, 100, 80, tower)
+    towerButtons.push(tBTN)
+})
+
 let spatialHash = new SpatialHash(16, mapSize)
 spatialHash.innitiateGrid()
+
 let wave = new WaveHandler(0)
+
 let minimap = new MiniMap(250)
-setInterval(() => {
-    for (let i = 0; i < 1; i++) {
-        let ang = Math.PI * 2 * Math.random()
-        let dist = 800+Math.random()*200
-        let testEnemy = new Enemy(mapSize/2 + dist * Math.cos(ang), mapSize/2 - dist * Math.sin(ang), 30, 300, 10)
-        world.ENEMIES.push(testEnemy)
-    }
-}, 1000/2)
-for (let i = 0, s = 3; i < s; i++) {
-    let ang = ((Math.PI*2)/s)*i
-    let testTower = new Tower(
-        mapSize/2+s*13*Math.cos(ang), 
-        mapSize/2+s*13*Math.sin(ang), 
-        "Basic",
-        "rgb(75, 75, 75)", 30, []
-    )
-    testTower.turrets = ((o = []) => {
-        for (let i = 0, s = 4; i < s; i++) {
-            let ang = ((Math.PI*2)/s )* i
-            let d = 19
-            o.push({
-                POSITION: [d*Math.cos(ang), d*Math.sin(ang)],
-                SIZE: 10,
-                //         damage (base is 5),       bspeed (base is 6)
-                STATS: [            10,                             6             ],
-                ANGLE: 0,
-                COLOR: "rgb(110, 110, 110)",
-                GUN_COL: "rgb(100, 100, 100)",
-                WIDTH: 10,
-                HEIGHT: 20,
-                CAN_SHOOT: true,
-                BULLET_COL: "rgb(150, 255, 10)",
-                MAX_RELOAD: 10,
-                RELOAD: 0
-            })
-        }
-        return o
-    })()
-    world.TOWERS.push(testTower)
-}
 
 document.addEventListener("keydown", (e) => {
     keys[e.keyCode] = true
@@ -154,8 +127,6 @@ let update =  setInterval(() => {
         }
     })
     world.ENEMIES.forEach((enemy) => {
-        enemy.towers = world.TOWERS
-
         if (enemy.health <= 0) {
             removeElement(enemy, world.ENEMIES)
         }
@@ -165,6 +136,9 @@ let update =  setInterval(() => {
     })
     minimap.entities = world.ENTITIES
     wave.update()
+    towerButtons.forEach((t) => {
+        t.update()
+    })
 }, 1000/60)
 function render() {
     fps++
@@ -183,8 +157,15 @@ function render() {
         e.draw()
     })
     ctx.restore()
+    minimap.x = canvas.width-minimap.size-10
+    minimap.y = 10
     minimap.draw()
     wave.draw()
+    towerButtons.forEach((tow, index) => {
+        tow.x = (canvas.width/2)-(tow.size*1.1)*towerButtons.length+(tow.size*1.1)*(index+1)
+        tow.y = canvas.height-tow.size/1.5
+        tow.draw()
+    })
     requestAnimationFrame(render)
 }
 render()

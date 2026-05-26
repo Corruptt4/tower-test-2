@@ -7,21 +7,40 @@ export class WaveHandler {
         this.y = 130
         this.ringSize = 80
         this.wave = startWave
-        this.waveMaxTimer = 60*4
+        this.waveMaxTimer = 60*6
         this.waveTimer = 0
         this.enemiesToSpawn = []
-        this.spawnTickDelay = 0
+        this.spawnTickDelay = 1
+        this.enemyTickSpawn = 0
     }
     startWave() {
         this.waveTimer = 0
-        for (let i = 0; i < 1+3*Math.max(0, this.wave-1); i++) {
-            let enemy = new Enemy(Math.random()*mapSize, Math.random()*mapSize, 30, 100*(1.5*(this.wave-1)), 10*(1.5*(this.wave-1)))
+        this.enemiesToSpawn = []
+        for (let i = 0; i < 10+3*(this.wave); i++) {
+            let enemy = new Enemy(Math.random()*mapSize, Math.random()*mapSize, 30, 100*(1.5*(this.wave)), 10*(1.5*(this.wave)))
+            enemy.towers = world.TOWERS
             this.enemiesToSpawn.push(enemy)
         }
+
+        this.enemyTickSpawn = this.enemiesToSpawn.length/2
     }
     draw() {
         ctx.beginPath()
-        ctx.strokeStyle = "rgb(185, 185, 185)"
+        ctx.fillStyle = "rgba(255, 255, 255, 0.2)"
+        ctx.lineWidth = 15
+        ctx.moveTo(this.x, this.y)
+        ctx.arc(this.x, this.y, this.ringSize, Math.PI/2, Math.PI/2 + Math.PI * 2)
+        ctx.fill()
+        ctx.closePath()
+
+        ctx.beginPath()
+        ctx.strokeStyle = "rgba(185, 185, 185"
+        ctx.lineWidth = 3
+        ctx.arc(this.x, this.y, this.ringSize, Math.PI/2, Math.PI/2 + Math.PI * 2)
+        ctx.stroke()
+        ctx.closePath()
+
+        ctx.beginPath()
         ctx.fillStyle = "rgba(255, 255, 255, 0.4)"
         ctx.lineWidth = 15
         ctx.moveTo(this.x, this.y)
@@ -31,7 +50,6 @@ export class WaveHandler {
 
         ctx.beginPath()
         ctx.strokeStyle = "rgb(185, 185, 185)"
-        ctx.fillStyle = "rgba(255, 255, 255, 0.4)"
         ctx.lineWidth = 15
         ctx.arc(this.x, this.y, this.ringSize, Math.PI/2, Math.PI/2 + Math.PI * 2 * (this.waveTimer/this.waveMaxTimer))
         ctx.stroke()
@@ -60,21 +78,13 @@ export class WaveHandler {
         ctx.closePath()
     }
     update() {
-        if (this.waveMaxTimer > this.waveTimer) {
+        if (this.waveMaxTimer > this.waveTimer && world.TOWERS.length > 0) {
             this.waveTimer++
         }
         if (this.waveTimer >= this.waveMaxTimer) {
             this.wave++
             this.startWave()
-        }
-        if (this.enemiesToSpawn.length > 0) {
-            if (this.spawnTickDelay > 0) {
-                this.spawnTickDelay--
-            }
-            if (this.spawnTickDelay <= 0) {
-                this.spawnTickDelay = 60
-
-            }
+            world.ENEMIES.push(...this.enemiesToSpawn)
         }
     }
 }

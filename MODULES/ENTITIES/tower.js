@@ -21,6 +21,7 @@ export class Tower {
             tur.TARGET = null
             tur.TARGETS = []
             tur.AVAILABLE_TARGETS = []
+            tur.SIZE *= (this.size/10)
         })
     }
     update() {
