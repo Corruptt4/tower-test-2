@@ -40,3 +40,11 @@ export function getDist(e1, e2) {
 export function randomElement(x) {
     return Math.floor(Math.random()*x.length)
 }
+export function mouseRectCollision(mx, my, bx, by, bl) {
+    return (
+        mx >= bx-bl && 
+        mx <= bx+bl &&
+        my >= by-bl && 
+        my <= by+bl
+    )
+}

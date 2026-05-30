@@ -7,7 +7,7 @@ export class WaveHandler {
         this.y = 130
         this.ringSize = 80
         this.wave = startWave
-        this.waveMaxTimer = 60*6
+        this.waveMaxTimer = 60*20
         this.waveTimer = 0
         this.enemiesToSpawn = []
         this.spawnTickDelay = 1
@@ -34,7 +34,7 @@ export class WaveHandler {
         ctx.closePath()
 
         ctx.beginPath()
-        ctx.strokeStyle = "rgba(185, 185, 185"
+        ctx.strokeStyle = "rgba(185, 185, 185)"
         ctx.lineWidth = 3
         ctx.arc(this.x, this.y, this.ringSize, Math.PI/2, Math.PI/2 + Math.PI * 2)
         ctx.stroke()

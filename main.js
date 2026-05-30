@@ -1,7 +1,7 @@
 import { Camera } from "./MODULES/camera.js"
 import { Enemy } from "./MODULES/ENTITIES/enemy.js"
-import { Tower } from "./MODULES/ENTITIES/tower.js"
-import { getAngle, removeElement } from "./MODULES/functions.js"
+import { Tower, TowerPlaceholder } from "./MODULES/ENTITIES/tower.js"
+import { getAngle, mouseRectCollision, removeElement } from "./MODULES/functions.js"
 import { MiniMap } from "./MODULES/minimap.js"
 import { SpatialHash } from "./MODULES/PHYSICS/spatialHash.js"
 import { WaveHandler } from "./MODULES/wave.js"
@@ -16,6 +16,10 @@ const SPEED = 10
 let keys = {}
 let fps = 0
 let uranium = 0
+let mx = 0
+let my = 0
+let wmx = 0
+let wmy = 0
 export let shownFPS = 0
 
 export let mapSize = 5000
@@ -26,7 +30,8 @@ export let world = {
     ENTITIES: [],
     TOWERS: [],
     ENEMIES: [],
-    BULLETS: []
+    BULLETS: [],
+    PLACEHOLDER: []
 }
 export const frictionFactor = 0.93
 
@@ -55,7 +60,35 @@ document.addEventListener("keyup", (e) => {
 window.addEventListener("contextmenu", (e) => {
     e.preventDefault()
 })
-
+document.addEventListener("mousemove", (e) => {
+    mx = e.clientX
+    my = e.clientY
+})
+document.addEventListener("mousedown", (e) => {
+    if (e.button == 0) {
+        if (world.PLACEHOLDER.length == 1){
+            let towerToPlace = world.PLACEHOLDER[0]
+            let newTower = new Tower(wmx, wmy, towerToPlace.name, "rgb(130, 130, 130)", 30, structuredClone(towerToPlace.turrets))
+            newTower.turrets.forEach((tur, index) => {
+                tur.COLOR = towerToPlace.savedTurretData[index].COLOR
+                tur.GUN_COL = towerToPlace.savedTurretData[index].GUN_COL
+                tur.SIZE /= (newTower.size/10)
+            })
+            world.TOWERS.push(newTower)
+            world.PLACEHOLDER.splice(0, 1)
+        }
+        if (world.PLACEHOLDER.length <= 1) {
+            towerButtons.forEach((b) => {
+                if (mouseRectCollision(mx, my, b.x, b.y, b.size) && world.PLACEHOLDER.length < 1) {
+                    let towToPlace = new TowerPlaceholder(wmx, wmy, "", "", 30, structuredClone(b.clonedTower.turrets))
+                    towToPlace.savedTurretData = structuredClone(b.clonedTower.turrets)
+                    world.PLACEHOLDER.push(towToPlace)
+                    console.log(towToPlace)
+                }
+            })
+        }
+    }
+})
 const camera = new Camera(mapSize/2, mapSize/2)
 setInterval(() => {
     shownFPS = fps
@@ -139,6 +172,12 @@ let update =  setInterval(() => {
     towerButtons.forEach((t) => {
         t.update()
     })
+    
+    wmx = mx+camera.x2-canvas.width/2
+    wmy = my+camera.y2-canvas.height/2
+    world.PLACEHOLDER.forEach((e) => {
+        e.update()
+    })
 }, 1000/60)
 function render() {
     fps++
@@ -156,13 +195,18 @@ function render() {
     world.TOWERS.forEach((e) => {
         e.draw()
     })
+    world.PLACEHOLDER.forEach((e) => {
+        e.x = wmx
+        e.y = wmy
+        e.draw()
+    })
     ctx.restore()
     minimap.x = canvas.width-minimap.size-10
     minimap.y = 10
     minimap.draw()
     wave.draw()
     towerButtons.forEach((tow, index) => {
-        tow.x = (canvas.width/2)-(tow.size*1.1)*towerButtons.length+(tow.size*1.1)*(index+1)
+        tow.x = (canvas.width/2)-(tow.size*1.1)*towerButtons.length+(tow.size*1.5)*(index+1)
         tow.y = canvas.height-tow.size/1.5
         tow.draw()
     })

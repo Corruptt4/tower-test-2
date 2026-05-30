@@ -11,7 +11,6 @@ export class Tower {
         this.health = 1500
         this.turrets = turrets
         this.type = "tower"
-        this.bulletID = 0;
         this.color = color;
         this.target = null
         this.canshoot = false
@@ -58,7 +57,6 @@ export class Tower {
             if (tur.ANGLE > 360) {
                 tur.ANGLE = 0
             }
-
             tur.RELOAD--
             if (tur.RELOAD <= 0 && tur.CAN_SHOOT) {
                 tur.RELOAD = tur.MAX_RELOAD
@@ -106,7 +104,70 @@ export class Tower {
             ctx.stroke()
             ctx.closePath()
             ctx.restore()
-            
+        })
+    }
+}
+
+export class TowerPlaceholder {
+    constructor(x, y, name, color, size, turrets) {
+        this.x = x;
+        this.y = y;
+        this.name = name ?? "Placeholder"
+        this.size = size;
+        this.health = 1500
+        this.turrets = turrets
+        this.bulletID = 0;
+        this.color = "rgb(0, 255, 0)";
+        this.savedTurretData = []
+        this.turrets.forEach((tur) => {
+            tur.TARGET = null
+            tur.TARGETS = []
+            tur.AVAILABLE_TARGETS = []
+            tur.SIZE *= (this.size/20)
+            tur.POSITION[0] *= (this.size/20)
+            tur.POSITION[1] *= (this.size/20)
+        })
+    }
+    update() {
+        this.turrets.forEach((tur) => {
+            tur.ANGLE += 360*0.003
+        })
+    }
+    draw() {
+        ctx.beginPath()
+        ctx.lineWidth = 3
+        ctx.fillStyle = this.color
+        ctx.strokeStyle = darkenRGB(this.color)
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.stroke()
+        ctx.closePath()
+
+        this.turrets.forEach((tur) => {
+            let turPos = [this.x+tur.POSITION[0], this.y+tur.POSITION[1]]
+            ctx.save()
+            ctx.translate(turPos[0], turPos[1])
+            ctx.rotate(-Math.PI/2+degreesToRads(tur.ANGLE))
+
+            // turret gun
+            ctx.beginPath()
+            ctx.fillStyle = tur.GUN_COL
+            ctx.strokeStyle = darkenRGB(tur.GUN_COL)
+            ctx.lineJoin = "round"
+            ctx.roundRect(0-(tur.WIDTH/2)*(tur.SIZE/10), 0, tur.WIDTH*(tur.SIZE/10), tur.HEIGHT*(tur.SIZE/10))
+            ctx.fill()
+            ctx.stroke()
+            ctx.closePath()
+
+            // turret body
+            ctx.beginPath()
+            ctx.fillStyle = tur.COLOR
+            ctx.strokeStyle = darkenRGB(tur.COLOR)
+            ctx.arc(0, 0, tur.SIZE, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.stroke()
+            ctx.closePath()
+            ctx.restore()
         })
     }
 }

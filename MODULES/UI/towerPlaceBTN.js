@@ -21,6 +21,7 @@ export class TowerButton {
         ctx.closePath()
 
         ctx.beginPath()
+        ctx.lineWidth = 3
         ctx.strokeStyle = darkenRGB("rgb(90, 90, 90)")
         ctx.roundRect(this.x-this.size/2, this.y-this.size/2, this.size, this.size, 0)
         ctx.stroke()
