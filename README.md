@@ -1,0 +1,2 @@
+# Under development. This is open-source, anyone can use it, mod it, do whatever with it!
+## This game is made to be moddable, and a Version 2 of Tower Test! Original game at [towerTest](https://tower-test.netlify.app)
