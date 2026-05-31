@@ -119,6 +119,37 @@ class DestroyerTower extends Tower {
     }
 }
 
+class TripletTower extends Tower {
+    constructor(x, y, name, color, size, turrets) {
+        super(x, y, name, color, size, turrets)
+        this.health = 2500
+        this.name = "Triple"
+    }
+
+    innitTurrets() {
+        this.turrets = ((o=[]) => {
+            for (let i = 0, s = 3; i < s; i++) {
+                let ang = ((Math.PI*2)/s)*i
+                o.push({
+                    POSITION: [10 * Math.cos(ang), 10 * Math.sin(ang)],
+                    SIZE: 4,
+                    STATS: [ 45, 6.5 ],
+                    ANGLE: (ang*(180/Math.PI)),
+                    COLOR: "rgb(110, 110, 110)",
+                    GUN_COL: "rgb(100, 100, 100)",
+                    WIDTH: 10,
+                    HEIGHT: 20,
+                    CAN_SHOOT: true,
+                    BULLET_COL: "rgb(120, 120, 120)",
+                    MAX_RELOAD: 25,
+                    RELOAD: 0
+                })
+            }
+            return o
+        })()
+    }
+}
+
 let basicTower = new BasicTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
 basicTower.innitTurrets()
 let twinTower = new TwinTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
@@ -127,11 +158,14 @@ let rapidTower = new RapidTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
 rapidTower.innitTurrets()
 let destroyerTower = new DestroyerTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
 destroyerTower.innitTurrets()
+let tripletTower = new TripletTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
+tripletTower.innitTurrets()
 
 export let towers = [
     // [tower, cost]
     [basicTower, 20],
     [twinTower, 70],
     [rapidTower, 80],
-    [destroyerTower, 160]
+    [destroyerTower, 160],
+    [tripletTower, 100]
 ]

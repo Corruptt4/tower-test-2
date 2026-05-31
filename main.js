@@ -71,7 +71,7 @@ document.addEventListener("mousemove", (e) => {
 })
 document.addEventListener("mousedown", (e) => {
     if (e.button == 0) {
-        if (world.PLACEHOLDER.length == 1 && uranium <= world.PLACEHOLDER[0][1] && world.PLACEHOLDER[0][0].canPlace) {
+        if (world.PLACEHOLDER.length == 1 && uranium < world.PLACEHOLDER[0][1] && world.PLACEHOLDER[0][0].canPlace) {
             world.PLACEHOLDER[0][0].color = "rgb(255, 0, 0)"
             world.PLACEHOLDER[0][0].canPlace = false
             setTimeout(() => {
