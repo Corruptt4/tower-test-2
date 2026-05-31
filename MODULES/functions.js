@@ -37,6 +37,17 @@ export function getDist(e1, e2) {
 
     return dist
 }
+export function abbreviate(n) {
+    if (n < 1000) return n;
+    let suffixes = ["k", "m", "b", "t", "qa", "qi", "sx", "sp", "oc", "no", "dc"]
+    for (let i = suffixes.length-1; i >= 0; i--) {
+        if (n >= Math.pow(10,3*(i+1))) {
+            n /= Math.pow(10,3*(i+1))
+            return n.toFixed(2) + suffixes[i]
+            break;
+        }
+    }
+}
 export function randomElement(x) {
     return Math.floor(Math.random()*x.length)
 }

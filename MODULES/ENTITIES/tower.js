@@ -116,7 +116,7 @@ export class TowerPlaceholder {
         this.size = size;
         this.health = 1500
         this.turrets = turrets
-        this.bulletID = 0;
+        this.canPlace = true
         this.color = "rgb(0, 255, 0)";
         this.savedTurretData = []
         this.turrets.forEach((tur) => {

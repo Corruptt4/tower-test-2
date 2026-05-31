@@ -14,6 +14,7 @@ export class Enemy {
         this.type = "enemy";
         this.isBoss = false;
         this.speed = 0.2;
+        this.reward = 10;
         this.vel = {
             x: 0,
             y: 0

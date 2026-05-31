@@ -19,6 +19,7 @@ export class WaveHandler {
         for (let i = 0; i < 10+3*(this.wave); i++) {
             let enemy = new Enemy(Math.random()*mapSize, Math.random()*mapSize, 30, 100*(1.5*(this.wave)), 10*(1.5*(this.wave)))
             enemy.towers = world.TOWERS
+            enemy.reward = 10+(10*2*(this.wave-1))
             this.enemiesToSpawn.push(enemy)
         }
 

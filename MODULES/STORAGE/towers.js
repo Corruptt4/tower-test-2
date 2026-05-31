@@ -130,8 +130,8 @@ destroyerTower.innitTurrets()
 
 export let towers = [
     // [tower, cost]
-    [basicTower, 0],
-    [twinTower, 0],
-    [rapidTower, 0],
-    [destroyerTower, 0]
+    [basicTower, 20],
+    [twinTower, 70],
+    [rapidTower, 80],
+    [destroyerTower, 160]
 ]
