@@ -20,7 +20,7 @@ let mx = 0
 let my = 0
 let wmx = 0
 let wmy = 0
-export let uranium = 150
+export let uranium = 200
 export let shownFPS = 0
 
 export let mapSize = 5000
