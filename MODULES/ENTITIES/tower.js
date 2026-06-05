@@ -4,17 +4,22 @@ import { Bullet } from "./bullet.js";
 
 export class Tower {
     constructor(x, y, name, color, size, turrets) {
-        this.x = x;
-        this.y = y;
+        this.x = x
+        this.y = y
         this.name = name ?? "Placeholder"
-        this.size = size;
+        this.size = size
         this.health = 1500
         this.turrets = turrets
         this.type = "tower"
-        this.color = color;
+        this.color = color
         this.target = null
         this.canshoot = false
         this.targets = []
+        this.description = "Placeholder placeholder: [Object object]"
+        this.uraniumProd = {
+            canProduce: false,
+            amount: 0 // PER TICK. 0.05 * 60 = 3/s
+        }
         this.availableTargets = []
         this.turrets.forEach((tur) => {
             tur.TARGET = null
@@ -22,6 +27,9 @@ export class Tower {
             tur.AVAILABLE_TARGETS = []
             tur.SIZE *= (this.size/10)
         })
+    }
+    miscUpdate(uran) {
+        uran += this.uraniumProd.amount
     }
     update() {
         this.targets = world.ENEMIES
@@ -118,6 +126,7 @@ export class TowerPlaceholder {
         this.turrets = turrets
         this.canPlace = true
         this.color = "rgb(0, 255, 0)";
+        this.savedColor = "rgb(130, 130, 130)";
         this.savedTurretData = []
         this.turrets.forEach((tur) => {
             tur.TARGET = null

@@ -20,7 +20,7 @@ let mx = 0
 let my = 0
 let wmx = 0
 let wmy = 0
-export let uranium = 150
+export var uranium = 150
 export let shownFPS = 0
 
 export let mapSize = 5000
@@ -68,6 +68,15 @@ window.addEventListener("contextmenu", (e) => {
 document.addEventListener("mousemove", (e) => {
     mx = e.clientX
     my = e.clientY
+
+    towerButtons.forEach((b) => {
+        b.hovered = false
+        if (mouseRectCollision(mx, my, b.x, b.y, b.size/2)) {
+            b.hovered = true
+            canvas.style.cursor = "pointer"
+        }
+    })
+    canvas.style.cursor = "default"
 })
 document.addEventListener("mousedown", (e) => {
     if (e.button == 0) {
@@ -103,24 +112,28 @@ document.addEventListener("mousedown", (e) => {
                     }, 50)
                 }
                 if (canPlace) {
-                    let newTower = new Tower(wmx, wmy, tower.name, "rgb(130, 130, 130)", 30, structuredClone(tower.turrets))
+                    let newTower = new Tower(wmx, wmy, tower.name, tower.savedColor, 30, structuredClone(tower.turrets))
                     newTower.turrets.forEach((tur, index) => {
                         tur.COLOR = tower.savedTurretData[index].COLOR
                         tur.GUN_COL = tower.savedTurretData[index].GUN_COL
                         tur.SIZE /= (newTower.size/10)
                     })
+                    newTower.color = world.PLACEHOLDER[0][0].savedColor
+                    newTower.uraniumProd = world.PLACEHOLDER[0][0].uraniumProd
                     uranium -= cost
                     world.TOWERS.push(newTower)
                     world.PLACEHOLDER.splice(0, 1)
                 }
             }
             if (world.TOWERS.length == 0) {
-                let newTower = new Tower(wmx, wmy, tower.name, "rgb(130, 130, 130)", 30, structuredClone(tower.turrets))
+                let newTower = new Tower(wmx, wmy, tower.name, tower.savedColor, 30, structuredClone(tower.turrets))
                 newTower.turrets.forEach((tur, index) => {
                     tur.COLOR = tower.savedTurretData[index].COLOR
                     tur.GUN_COL = tower.savedTurretData[index].GUN_COL
                     tur.SIZE /= (newTower.size/10)
                 })
+                newTower.color = world.PLACEHOLDER[0][0].savedColor
+                newTower.uraniumProd = world.PLACEHOLDER[0][0].uraniumProd
                 uranium -= cost
                 world.TOWERS.push(newTower)
                 world.PLACEHOLDER.splice(0, 1)
@@ -128,9 +141,11 @@ document.addEventListener("mousedown", (e) => {
         }
         if (world.PLACEHOLDER.length == 0) {
             for (let b of towerButtons) {
-                if (mouseRectCollision(mx, my, b.x, b.y, b.size) && world.PLACEHOLDER.length < 1) {
+                if (mouseRectCollision(mx, my, b.x, b.y, b.size/2) && world.PLACEHOLDER.length < 1) {
                     let towToPlace = new TowerPlaceholder(wmx, wmy, "", "", 30, structuredClone(b.clonedTower.turrets))
                     towToPlace.savedTurretData = structuredClone(b.clonedTower.turrets)
+                    towToPlace.savedColor = b.clonedTower.savedColor
+                    towToPlace.uraniumProd = b.clonedTower.uraniumProd
                     world.PLACEHOLDER.push([towToPlace, b.cost])
                     console.log(towToPlace)
                     break;
@@ -205,6 +220,10 @@ let update =  setInterval(() => {
     })
     world.TOWERS.forEach((tow) => {
         tow.targets = world.ENEMIES
+        tow.miscUpdate(uranium)
+        if (tow.uraniumProd.canProduce) {
+            uranium += tow.uraniumProd.amount/60
+        }
         if (tow.health <= 0) {
             removeElement(tow, world.TOWERS)
         }
@@ -257,7 +276,7 @@ function render() {
     minimap.draw()
     wave.draw()
     towerButtons.forEach((tow, index) => {
-        tow.x = (canvas.width/2)-(tow.size*1.1)*towerButtons.length+(tow.size*1.5)*(index+1)
+        tow.x = (canvas.width/2)-(tow.size*1.1)*towerButtons.length/1.25+(tow.size*1.5)*(index+1)
         tow.y = canvas.height-tow.size/1.5
         tow.draw()
     })

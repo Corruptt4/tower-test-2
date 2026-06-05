@@ -5,6 +5,8 @@ class BasicTower extends Tower {
         super(x, y, name, color, size, turrets)
         this.health = 2500
         this.name = "Basic"
+        this.description = "Everything starts here."
+        this.savedColor = "rgb(130, 130, 130)"
     }
 
     innitTurrets() {
@@ -31,6 +33,8 @@ class TwinTower extends Tower {
         super(x, y, name, color, size, turrets)
         this.health = 2500
         this.name = "Twin"
+        this.description = "The turrets aren't alone anymore."
+        this.savedColor = "rgb(130, 130, 130)"
     }
 
     innitTurrets() {
@@ -71,6 +75,8 @@ class RapidTower extends Tower {
         super(x, y, name, color, size, turrets)
         this.health = 2500
         this.name = "Rapid"
+        this.description = "Shoots extremely fast."
+        this.savedColor = "rgb(130, 130, 130)"
     }
 
     innitTurrets() {
@@ -97,6 +103,8 @@ class DestroyerTower extends Tower {
         super(x, y, name, color, size, turrets)
         this.health = 2500
         this.name = "Destroyer"
+        this.description = "Very high damage."
+        this.savedColor = "rgb(130, 130, 130)"
     }
 
     innitTurrets() {
@@ -124,6 +132,8 @@ class TripletTower extends Tower {
         super(x, y, name, color, size, turrets)
         this.health = 2500
         this.name = "Triple"
+        this.description = "Triplets? Triple the damage, because triple the turrets."
+        this.savedColor = "rgb(130, 130, 130)"
     }
 
     innitTurrets() {
@@ -149,17 +159,32 @@ class TripletTower extends Tower {
         })()
     }
 }
+class ProducerTower extends Tower {
+    constructor(x, y, name, color, size, turrets) {
+        super(x, y, name, color, size, turrets)
+        this.health = 6000
+        this.name = "Producer"
+        this.color = "rgb(0, 255, 0)"
+        this.savedColor = "rgb(0, 255, 0)"
+        this.description = "Vulnerable, looks radioactive... produces uranium."
+        this.uraniumProd = {
+            canProduce: true,
+            amount: 10 // 10/s
+        }
+    }
+}
 
-let basicTower = new BasicTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
+let basicTower = new BasicTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 basicTower.innitTurrets()
-let twinTower = new TwinTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
+let twinTower = new TwinTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 twinTower.innitTurrets()
-let rapidTower = new RapidTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
+let rapidTower = new RapidTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 rapidTower.innitTurrets()
-let destroyerTower = new DestroyerTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
+let destroyerTower = new DestroyerTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 destroyerTower.innitTurrets()
-let tripletTower = new TripletTower(0, 0, "", "rgb(120, 120, 120)", 30, [])
+let tripletTower = new TripletTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 tripletTower.innitTurrets()
+let producerTower = new ProducerTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 
 export let towers = [
     // [tower, cost]
@@ -167,5 +192,6 @@ export let towers = [
     [twinTower, 70],
     [rapidTower, 80],
     [destroyerTower, 160],
-    [tripletTower, 100]
+    [tripletTower, 100],
+    [producerTower, 150]
 ]

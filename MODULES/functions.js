@@ -38,7 +38,7 @@ export function getDist(e1, e2) {
     return dist
 }
 export function abbreviate(n) {
-    if (n < 1000) return n;
+    if (n < 1000) return n.toFixed(0);
     let suffixes = ["k", "m", "b", "t", "qa", "qi", "sx", "sp", "oc", "no", "dc"]
     for (let i = suffixes.length-1; i >= 0; i--) {
         if (n >= Math.pow(10,3*(i+1))) {
@@ -53,9 +53,9 @@ export function randomElement(x) {
 }
 export function mouseRectCollision(mx, my, bx, by, bl) {
     return (
-        mx >= bx-bl && 
-        mx <= bx+bl &&
-        my >= by-bl && 
-        my <= by+bl
+        mx > bx-bl && 
+        mx < bx+bl &&
+        my > by-bl && 
+        my < by+bl
     )
 }
