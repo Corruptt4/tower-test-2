@@ -20,7 +20,7 @@ let mx = 0
 let my = 0
 let wmx = 0
 let wmy = 0
-export var uranium = 150
+export var uranium = 1000
 export let shownFPS = 0
 
 export let mapSize = 5000
@@ -120,6 +120,10 @@ document.addEventListener("mousedown", (e) => {
                     })
                     newTower.color = world.PLACEHOLDER[0][0].savedColor
                     newTower.uraniumProd = world.PLACEHOLDER[0][0].uraniumProd
+                    newTower.blastMaxReload = world.PLACEHOLDER[0][0].blastMaxReload
+                    newTower.blastDamage = world.PLACEHOLDER[0][0].blastDamage
+                    newTower.blastRadius = world.PLACEHOLDER[0][0].blastRadius
+                    newTower.blastPush = world.PLACEHOLDER[0][0].blastPush
                     uranium -= cost
                     world.TOWERS.push(newTower)
                     world.PLACEHOLDER.splice(0, 1)
@@ -134,6 +138,10 @@ document.addEventListener("mousedown", (e) => {
                 })
                 newTower.color = world.PLACEHOLDER[0][0].savedColor
                 newTower.uraniumProd = world.PLACEHOLDER[0][0].uraniumProd
+                newTower.blastMaxReload = world.PLACEHOLDER[0][0].blastMaxReload
+                newTower.blastDamage = world.PLACEHOLDER[0][0].blastDamage
+                newTower.blastRadius = world.PLACEHOLDER[0][0].blastRadius
+                newTower.blastPush = world.PLACEHOLDER[0][0].blastPush
                 uranium -= cost
                 world.TOWERS.push(newTower)
                 world.PLACEHOLDER.splice(0, 1)
@@ -146,6 +154,11 @@ document.addEventListener("mousedown", (e) => {
                     towToPlace.savedTurretData = structuredClone(b.clonedTower.turrets)
                     towToPlace.savedColor = b.clonedTower.savedColor
                     towToPlace.uraniumProd = b.clonedTower.uraniumProd
+                    towToPlace.blastReload = b.clonedTower.blastMaxReload
+                    towToPlace.blastMaxReload = b.clonedTower.blastMaxReload
+                    towToPlace.blastDamage = b.clonedTower.blastDamage
+                    towToPlace.blastRadius = b.clonedTower.blastRadius
+                    towToPlace.blastPush = b.clonedTower.blastPush
                     world.PLACEHOLDER.push([towToPlace, b.cost])
                     console.log(towToPlace)
                     break;

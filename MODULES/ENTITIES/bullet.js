@@ -32,3 +32,31 @@ export class Bullet {
         ctx.closePath()
     }
 }
+
+export class Shockwave {
+    constructor(x, y, minSize, maxSize) {
+        this.x = x;
+        this.y = y;
+        this.minSize = minSize;
+        this.maxSize = maxSize;
+        this.type = "bullet"
+        this.sizeDifference = maxSize - minSize
+        this.t = 0;
+    }
+    update() {
+        if (this.t < 1) {
+            this.t += 0.07
+        }
+        if (this.t >= 1) {
+            world.BULLETS.splice(world.BULLETS.indexOf(this), 1)
+        }
+    }
+    draw() {
+        ctx.beginPath()
+        ctx.strokeStyle = `rgba(255, 255, 255, ${1-this.t})`
+        ctx.lineWidth = (1-this.t) * 10
+        ctx.arc(this.x, this.y, this.minSize + this.sizeDifference*this.t, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.closePath()
+    }
+}

@@ -126,6 +126,21 @@ class DestroyerTower extends Tower {
         ]
     }
 }
+class BlastTower extends Tower {
+    constructor(x, y, name, color, size, turrets) {
+        super(x, y, name, color, size, turrets)
+        this.health = 3500
+        this.name = "Blaster"
+        this.blastMaxReload = 50;
+        this.blastReload = 0;
+        this.blastDamage = 45;
+        this.blastRadius = 10;
+        this.blastPush = 5;
+        this.description = "Blast damage doing the work today! For free!"
+        this.color = "rgb(40, 40, 40)"
+        this.savedColor = "rgb(40, 40, 40)"
+    }
+}
 
 class TripletTower extends Tower {
     constructor(x, y, name, color, size, turrets) {
@@ -185,6 +200,7 @@ destroyerTower.innitTurrets()
 let tripletTower = new TripletTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 tripletTower.innitTurrets()
 let producerTower = new ProducerTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
+let blastTower = new BlastTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 
 export let towers = [
     // [tower, cost]
@@ -193,5 +209,6 @@ export let towers = [
     [rapidTower, 80],
     [destroyerTower, 160],
     [tripletTower, 100],
-    [producerTower, 150]
+    [producerTower, 150],
+    [blastTower, 450]
 ]

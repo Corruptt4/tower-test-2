@@ -7,7 +7,7 @@ export class WaveHandler {
         this.y = 130
         this.ringSize = 80
         this.wave = startWave
-        this.waveMaxTimer = 60*20
+        this.waveMaxTimer = 60*2
         this.waveTimer = 0
         this.enemiesToSpawn = []
         this.spawnTickDelay = 1

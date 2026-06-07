@@ -1,5 +1,5 @@
 import { ctx, world } from "../../main.js"
-import { darkenRGB } from "../functions.js";
+import { abbreviate, darkenRGB } from "../functions.js";
 
 export class TowerButton {
     constructor(x, y, size, tower, cost) {
@@ -13,6 +13,7 @@ export class TowerButton {
         this.tabWidth = 500
         this.tabHeight = 250
         this.clonedTower = new this.tower.constructor(this.x, this.y, 15, this.tower.color, 20, this.tower.turrets)
+        this.clonedTower.showAura = false;
     }
     update() {
         this.turretAngle += 1
@@ -76,9 +77,12 @@ export class TowerButton {
                 })
                 averageDamage /= this.clonedTower.turrets.length
             }
+            if (this.clonedTower.blastDamage > 0) {
+                averageDamage = this.clonedTower.blastDamage
+            }
             ctx.fillStyle = "rgb(255, 50, 50)"
-            ctx.strokeText("Avg. damage: " + averageDamage, tabX+10, tabY+this.tabHeight-15)
-            ctx.fillText("Avg. damage: " + averageDamage, tabX+10, tabY+this.tabHeight-15)
+            ctx.strokeText(this.clonedTower.blastDamage > 0 ? "Blast Damage: " + averageDamage : "Avg. Damage: " + averageDamage, tabX+10, tabY+this.tabHeight-15)
+            ctx.fillText(this.clonedTower.blastDamage > 0 ? "Blast Damage: " + averageDamage : "Avg. Damage: " + averageDamage, tabX+10, tabY+this.tabHeight-15)
             
             let averageReload = 0
             if (this.clonedTower.turrets.length > 0) {
@@ -87,11 +91,24 @@ export class TowerButton {
                 })
                 averageReload /= this.clonedTower.turrets.length
             }
+            if (this.clonedTower.blastMaxReload > 0) {
+                averageReload = this.clonedTower.blastMaxReload
+            }
             ctx.fillStyle = "rgb(255, 255, 255)"
             ctx.font = "20px Arial"
             ctx.textAlign = "right"
-            ctx.strokeText("Avg. reload: " + (averageReload/60).toFixed(3) + "s", tabX+this.tabWidth-10, tabY+30)
-            ctx.fillText("Avg. reload: " + (averageReload/60).toFixed(3) + "s", tabX+this.tabWidth-10, tabY+30)
+            ctx.strokeText(this.clonedTower.blastMaxReload > 0 ? "Blast Cooldown: " + (averageReload/60).toFixed(3) + "s" : "Avg. Reload" + (averageReload/60).toFixed(3) + "s", tabX+this.tabWidth-10, tabY+30)
+            ctx.fillText(this.clonedTower.blastMaxReload > 0 ? "Blast Cooldown: " + (averageReload/60).toFixed(3) + "s" : "Avg. Reload" + (averageReload/60).toFixed(3) + "s", tabX+this.tabWidth-10, tabY+30)
+            ctx.font = "15px Arial"
+            ctx.fillStyle = "rgb(0, 255, 0)"
+            ctx.strokeText(this.cost + " Uranium", tabX+this.tabWidth-10, tabY+this.tabHeight-10)
+            ctx.fillText(this.cost + " Uranium", tabX+this.tabWidth-10, tabY+this.tabHeight-10)
+            if (this.clonedTower.blastPush > 0) {
+                ctx.font = "15px Arial"
+                ctx.fillStyle = "rgb(255, 255, 255)"
+                ctx.strokeText("Blast Push: " + abbreviate(this.clonedTower.blastPush), tabX+this.tabWidth-10, tabY+this.tabHeight-30)
+                ctx.fillText("Blast Push: " + abbreviate(this.clonedTower.blastPush), tabX+this.tabWidth-10, tabY+this.tabHeight-30)
+            }
             ctx.closePath()
         }
     }

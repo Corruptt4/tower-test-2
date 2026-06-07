@@ -1,6 +1,6 @@
 import {darkenRGB, degreesToRads, getAngle, getDist, minMax, randomElement} from "../functions.js"
 import { ctx, world } from "../../main.js";
-import { Bullet } from "./bullet.js";
+import { Bullet, Shockwave } from "./bullet.js";
 
 export class Tower {
     constructor(x, y, name, color, size, turrets) {
@@ -14,7 +14,14 @@ export class Tower {
         this.color = color
         this.target = null
         this.canshoot = false
+        this.showAura = true;
+        this.blastMaxReload = 0
+        this.blastReload = 0
+        this.blastDamage = 0
+        this.blastRadius = 0;
+        this.blastPush = 0;
         this.targets = []
+        this.t = 0
         this.description = "Placeholder placeholder: [Object object]"
         this.uraniumProd = {
             canProduce: false,
@@ -32,6 +39,28 @@ export class Tower {
         uran += this.uraniumProd.amount
     }
     update() {
+        if (this.blastMaxReload > 0) {
+            this.blastReload++
+            if (this.blastReload >= this.blastMaxReload) {
+                this.blastReload = 0
+                let shockwave = new Shockwave(this.x, this.y, this.size, this.size*this.blastRadius)
+                world.BULLETS.push(shockwave)
+                world.ENEMIES.forEach((e) => {
+                    let dx = e.x - this.x
+                    let dy = e.y - this.y
+                    let blastSize = this.size*this.blastRadius
+                    let r = e.size + blastSize
+                    let dist = dx*dx+dy*dy
+                    let angle = Math.atan2(dy, dx)
+                    if (dist <= r*r) {
+                        e.vel.x += (this.blastPush) * Math.cos(angle)
+                        e.vel.y += (this.blastPush) * Math.sin(angle)
+                        e.health -= this.blastDamage
+                    }
+                })
+            }
+        }
+        this.t += 0.03
         this.targets = world.ENEMIES
         this.turrets.forEach((tur) => {
             tur.TARGETS = this.targets
@@ -78,6 +107,24 @@ export class Tower {
         })
     }
     draw() {
+        if (this.uraniumProd.canProduce && this.showAura) {
+            ctx.beginPath()
+            ctx.fillStyle = "rgba(0, 255, 0, 0.5)"
+            ctx.strokeStyle = "rgb(0, 255, 0)"
+            ctx.lineWidth = 3
+            ctx.arc(this.x, this.y, this.size*2 + this.size*Math.sin(this.t), 0, Math.PI*2)
+            ctx.fill()
+            ctx.stroke()
+            ctx.closePath()
+        }
+
+        ctx.beginPath()
+        ctx.lineWidth = 2
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)"
+        ctx.arc(this.x, this.y, this.size*1.3, 0, Math.PI * 2 * (this.blastReload/this.blastMaxReload))
+        ctx.stroke()
+        ctx.closePath()
+
         ctx.beginPath()
         ctx.lineWidth = 3
         ctx.fillStyle = this.color
