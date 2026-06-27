@@ -8,22 +8,24 @@ import { WaveHandler } from "./MODULES/wave.js"
 import { towers } from "./MODULES/STORAGE/towers.js"
 import { TowerButton } from "./MODULES/UI/towerPlaceBTN.js"
 import { PointText } from "./MODULES/UI/pointText.js"
+import { settings } from "./MODULES/settings.js"
+import { Drone } from "./MODULES/ENTITIES/drone.js"
 
 function resize() {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 }
-const SPEED = 10
+const SPEED = settings.cameraSpeed
 let keys = {}
 let fps = 0
 let mx = 0
 let my = 0
 let wmx = 0
 let wmy = 0
-export var uranium = 1000
+export var uranium = settings.uraniumPoints
 export let shownFPS = 0
 
-export let mapSize = 5000
+export let mapSize = settings.mapSize
 export const canvas = document.getElementById("canv"),
             ctx = canvas.getContext("2d")
 resize()
@@ -32,9 +34,10 @@ export let world = {
     TOWERS: [],
     ENEMIES: [],
     BULLETS: [],
+    DRONES: [],
     PLACEHOLDER: []
 }
-export const frictionFactor = 0.93
+export const frictionFactor = settings.frictionFactor
 
 let towerButtons = []
 let pointTexts = []
@@ -50,7 +53,7 @@ towers.forEach((struct) => {
 let spatialHash = new SpatialHash(16, mapSize)
 spatialHash.innitiateGrid()
 
-let wave = new WaveHandler(0)
+let wave = new WaveHandler(settings.startingWave)
 
 let minimap = new MiniMap(250)
 
@@ -124,6 +127,7 @@ document.addEventListener("mousedown", (e) => {
                     newTower.blastDamage = world.PLACEHOLDER[0][0].blastDamage
                     newTower.blastRadius = world.PLACEHOLDER[0][0].blastRadius
                     newTower.blastPush = world.PLACEHOLDER[0][0].blastPush
+                    newTower.droneSpawner = world.PLACEHOLDER[0][0].droneSpawner
                     uranium -= cost
                     world.TOWERS.push(newTower)
                     world.PLACEHOLDER.splice(0, 1)
@@ -142,6 +146,7 @@ document.addEventListener("mousedown", (e) => {
                 newTower.blastDamage = world.PLACEHOLDER[0][0].blastDamage
                 newTower.blastRadius = world.PLACEHOLDER[0][0].blastRadius
                 newTower.blastPush = world.PLACEHOLDER[0][0].blastPush
+                newTower.droneSpawner = world.PLACEHOLDER[0][0].droneSpawner
                 uranium -= cost
                 world.TOWERS.push(newTower)
                 world.PLACEHOLDER.splice(0, 1)
@@ -159,6 +164,7 @@ document.addEventListener("mousedown", (e) => {
                     towToPlace.blastDamage = b.clonedTower.blastDamage
                     towToPlace.blastRadius = b.clonedTower.blastRadius
                     towToPlace.blastPush = b.clonedTower.blastPush
+                    towToPlace.droneSpawner = b.clonedTower.droneSpawner
                     world.PLACEHOLDER.push([towToPlace, b.cost])
                     console.log(towToPlace)
                     break;
@@ -197,6 +203,28 @@ let collisionUpdate = setInterval(() => {
             enemy.vel.y -= 2*Math.sin(angle)
             return
         }
+        if (e1.type == "drone" && e2.type == "drone") {
+            let dx = e1.x - e2.x
+            let dy = e1.y - e2.y
+            let angle = getAngle(dx, dy)
+            e1.vel.x += 2*Math.cos(angle)
+            e1.vel.y += 2*Math.sin(angle)
+            
+            e2.vel.x -= 2*Math.cos(angle)
+            e2.vel.y -= 2*Math.sin(angle)
+        }
+        if ((e1.type == "drone" && e2.type == "enemy") || (e1.type == "enemy" && e2.type == "drone")) {
+            let enemy = e1.type === "enemy" ? e1 : e2
+            let drone = e2.type === "drone" ? e2 : e1
+            let dx = enemy.x - drone.x
+            let dy = enemy.y - drone.y
+            let angle = getAngle(dx, dy)
+            enemy.vel.x += 2*Math.cos(angle)
+            enemy.vel.y += 2*Math.sin(angle)
+            
+            drone.vel.x -= 2*Math.cos(angle)
+            drone.vel.y -= 2*Math.sin(angle)
+        }
         if (e1.type == "enemy" && e2.type == "enemy") {
             let dx = e1.x - e2.x
             let dy = e1.y - e2.y
@@ -212,7 +240,7 @@ let collisionUpdate = setInterval(() => {
 }, 1000/10)
 
 let update =  setInterval(() => {
-    world.ENTITIES = world.TOWERS.concat(world.ENEMIES).concat(world.BULLETS)
+    world.ENTITIES = world.TOWERS.concat(world.ENEMIES).concat(world.BULLETS).concat(world.DRONES)
     if (keys[87] || keys[38]) {
         camera.y -= SPEED
     }
@@ -240,6 +268,10 @@ let update =  setInterval(() => {
         if (tow.health <= 0) {
             removeElement(tow, world.TOWERS)
         }
+    })
+    world.DRONES.forEach((drone) => {
+        drone.update()
+        drone.targets = world.ENEMIES
     })
     world.ENEMIES.forEach((enemy) => {
         if (enemy.health <= 0) {
@@ -277,6 +309,9 @@ function render() {
     })
     world.TOWERS.forEach((e) => {
         e.draw()
+    })
+    world.DRONES.forEach((d) => {
+        d.draw()
     })
     world.PLACEHOLDER.forEach((e) => {
         e[0].x = wmx

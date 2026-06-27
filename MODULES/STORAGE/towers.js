@@ -188,6 +188,22 @@ class ProducerTower extends Tower {
         }
     }
 }
+class DroneTower extends Tower {
+    constructor(x, y, name, color, size, turrets) {
+        super(x, y, name, color, size, turrets)
+        this.health = 6000
+        this.name = "Hangar"
+        this.savedColor = "rgb(130, 130, 130)"
+        this.description = "Now comes to spawn drones for defense."
+        this.droneSpawner = {
+            canSpawn: true,
+            interval: 150,
+            maxInterval: 150,
+            maxDrones: 5,
+            droneStats: [ 30, 12, 1500, 15, 25 ]
+        }
+    }
+}
 
 let basicTower = new BasicTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 basicTower.innitTurrets()
@@ -201,6 +217,7 @@ let tripletTower = new TripletTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 tripletTower.innitTurrets()
 let producerTower = new ProducerTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 let blastTower = new BlastTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
+let droneTower = new DroneTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 
 export let towers = [
     // [tower, cost]
@@ -210,5 +227,6 @@ export let towers = [
     [destroyerTower, 160],
     [tripletTower, 100],
     [producerTower, 150],
-    [blastTower, 450]
+    [blastTower, 450],
+    [droneTower, 100]
 ]

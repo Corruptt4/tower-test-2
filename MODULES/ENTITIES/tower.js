@@ -1,6 +1,7 @@
 import {darkenRGB, degreesToRads, getAngle, getDist, minMax, randomElement} from "../functions.js"
 import { ctx, world } from "../../main.js";
 import { Bullet, Shockwave } from "./bullet.js";
+import { Drone } from "./drone.js";
 
 export class Tower {
     constructor(x, y, name, color, size, turrets) {
@@ -21,6 +22,14 @@ export class Tower {
         this.blastRadius = 0;
         this.blastPush = 0;
         this.targets = []
+        this.drones = []
+        this.droneSpawner = {
+            canSpawn: false,
+            maxDrones: 0,
+            maxInterval: 100,
+            interval: 100, // ms
+            droneStats: [ 30, 12, 1500, 15, 35 ] // [ damage, bullet speed, drone health, drone damage]
+        }
         this.t = 0
         this.description = "Placeholder placeholder: [Object object]"
         this.uraniumProd = {
@@ -39,6 +48,17 @@ export class Tower {
         uran += this.uraniumProd.amount
     }
     update() {
+        if (this.droneSpawner.canSpawn) {
+            if (this.drones.length < this.droneSpawner.maxDrones) {
+                this.droneSpawner.interval--
+            }
+            if (this.droneSpawner.interval == 0) {
+                this.droneSpawner.interval = this.droneSpawner.maxInterval
+                let drone = new Drone(this.x, this.y, 25, this)
+                this.drones.push(drone)
+                world.DRONES.push(drone)
+            }
+        }
         if (this.blastMaxReload > 0) {
             this.blastReload++
             if (this.blastReload >= this.blastMaxReload) {

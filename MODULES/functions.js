@@ -1,6 +1,9 @@
 export function degreesToRads(x) {
     return x * (Math.PI / 180)
 }
+export function radsToDegrees(x) {
+    return x * (180 / Math.PI)
+}
 export function darkenRGB(rgb, darken = 20) {
     if (typeof rgb !== "string") {
         console.error("Invalid input to darkenRGB:", rgb);
@@ -58,4 +61,13 @@ export function mouseRectCollision(mx, my, bx, by, bl) {
         my > by-bl && 
         my < by+bl
     )
+}
+export function drawPolygon(x, y, size, sides, ctx) {
+    ctx.moveTo(x + size * Math.cos(0), y + size * Math.sin(0))
+    for (let i = 0; i < sides+2; i++) {
+        ctx.lineTo(
+            size * Math.cos(((Math.PI * 2) / sides * i)),
+            size * Math.sin(((Math.PI * 2) / sides * i))
+        )
+    }
 }
