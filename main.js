@@ -10,6 +10,7 @@ import { TowerButton } from "./MODULES/UI/towerPlaceBTN.js"
 import { PointText } from "./MODULES/UI/pointText.js"
 import { settings } from "./MODULES/settings.js"
 import { Drone } from "./MODULES/ENTITIES/drone.js"
+import { makeGrid } from "./MODULES/grid.js"
 
 function resize() {
     canvas.width = window.innerWidth
@@ -296,6 +297,18 @@ let update =  setInterval(() => {
     })
     world.ENTITIES.forEach((e) => {
         e.update()
+        if (e.x <= 0 && e.vel.x < 0) {
+            e.vel.x += 1
+        }
+        if (e.x >= mapSize && e.vel.x > 0) {
+            e.vel.x -= 1
+        }
+        if (e.y <= 0 && e.vel.y < 0) {
+            e.vel.y += 1
+        }
+        if (e.y >= mapSize && e.vel.y > 0) {
+            e.vel.y -= 1
+        }
     })
     minimap.entities = world.ENTITIES
     wave.update()
@@ -316,6 +329,7 @@ function render() {
     // spatialHash.draw()
     ctx.save()
     camera.apply()
+    makeGrid(90)
     world.BULLETS.forEach((e) => {
         e.draw()
     })
