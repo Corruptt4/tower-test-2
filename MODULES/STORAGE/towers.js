@@ -197,10 +197,10 @@ class DroneTower extends Tower {
         this.description = "Now comes to spawn drones for defense."
         this.droneSpawner = {
             canSpawn: true,
-            interval: 150,
+            interval: 0,
             maxInterval: 150,
             maxDrones: 5,
-            droneStats: [ 30, 12, 1500, 15, 25 ]
+            droneStats: [ 30, 8, 1500, 15, 25 ]
         }
     }
 }

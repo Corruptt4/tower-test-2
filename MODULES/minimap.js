@@ -27,7 +27,7 @@ export class MiniMap {
         ctx.fillText("FPS: " + shownFPS, this.x+this.size, this.y+this.size+20)
         ctx.closePath()
 
-        this.entities.filter((a) => a.type != "bullet").forEach((entity) => {
+        this.entities.filter((a) => a.type != "bullet").filter((a) => a.type !="drone").forEach((entity) => {
             ctx.beginPath()
             ctx.fillStyle = entity.color
             ctx.arc(this.x+entity.x*this.downScale, this.y+entity.y*this.downScale, 2, 0, Math.PI*2)

@@ -82,6 +82,18 @@ document.addEventListener("mousemove", (e) => {
     canvas.style.cursor = "default"
 })
 document.addEventListener("mousedown", (e) => {
+    world.TOWERS.forEach((tow) => {
+        let dx = tow.x-wmx
+        let dy = tow.y-wmy
+        let size = tow.size*tow.size
+        let dist = dx*dx+dy*dy
+        if (dist < size) {
+            tow.selected = true
+        }
+        if (dist > size) {
+            tow.selected = false
+        }
+    })
     if (e.button == 0) {
         if (world.PLACEHOLDER.length == 1 && uranium < world.PLACEHOLDER[0][1] && world.PLACEHOLDER[0][0].canPlace) {
             world.PLACEHOLDER[0][0].color = "rgb(255, 0, 0)"
@@ -128,6 +140,7 @@ document.addEventListener("mousedown", (e) => {
                     newTower.blastRadius = world.PLACEHOLDER[0][0].blastRadius
                     newTower.blastPush = world.PLACEHOLDER[0][0].blastPush
                     newTower.droneSpawner = world.PLACEHOLDER[0][0].droneSpawner
+                    newTower.level = world.PLACEHOLDER[0][0].level
                     uranium -= cost
                     world.TOWERS.push(newTower)
                     world.PLACEHOLDER.splice(0, 1)
@@ -147,6 +160,7 @@ document.addEventListener("mousedown", (e) => {
                 newTower.blastRadius = world.PLACEHOLDER[0][0].blastRadius
                 newTower.blastPush = world.PLACEHOLDER[0][0].blastPush
                 newTower.droneSpawner = world.PLACEHOLDER[0][0].droneSpawner
+                newTower.level = world.PLACEHOLDER[0][0].level
                 uranium -= cost
                 world.TOWERS.push(newTower)
                 world.PLACEHOLDER.splice(0, 1)
@@ -158,13 +172,14 @@ document.addEventListener("mousedown", (e) => {
                     let towToPlace = new TowerPlaceholder(wmx, wmy, "", "", 30, structuredClone(b.clonedTower.turrets))
                     towToPlace.savedTurretData = structuredClone(b.clonedTower.turrets)
                     towToPlace.savedColor = b.clonedTower.savedColor
-                    towToPlace.uraniumProd = b.clonedTower.uraniumProd
+                    towToPlace.uraniumProd = structuredClone(b.clonedTower.uraniumProd)
                     towToPlace.blastReload = b.clonedTower.blastMaxReload
                     towToPlace.blastMaxReload = b.clonedTower.blastMaxReload
                     towToPlace.blastDamage = b.clonedTower.blastDamage
                     towToPlace.blastRadius = b.clonedTower.blastRadius
                     towToPlace.blastPush = b.clonedTower.blastPush
-                    towToPlace.droneSpawner = b.clonedTower.droneSpawner
+                    towToPlace.droneSpawner = structuredClone(b.clonedTower.droneSpawner)
+                    towToPlace.level = b.clonedTower.level
                     world.PLACEHOLDER.push([towToPlace, b.cost])
                     console.log(towToPlace)
                     break;

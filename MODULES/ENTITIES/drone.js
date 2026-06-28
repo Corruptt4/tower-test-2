@@ -33,8 +33,8 @@ export class Drone {
         this.target = null;
         this.returning = false
         this.vel = {
-            x: 1 * Math.cos(Math.PI * 2 * Math.random()),
-            y: 1 * Math.sin(Math.PI * 2 * Math.random())
+            x: 2 * Math.cos(Math.PI * 2 * Math.random()),
+            y: 2 * Math.sin(Math.PI * 2 * Math.random())
         }
         this.color = darkenRGB(host.color, 25);
     }

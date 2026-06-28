@@ -14,6 +14,9 @@ export class Tower {
         this.type = "tower"
         this.color = color
         this.target = null
+        this.selected = false;
+        this.upgradeCost = 150;
+        this.level = 1;
         this.canshoot = false
         this.showAura = true;
         this.blastMaxReload = 0
@@ -21,6 +24,7 @@ export class Tower {
         this.blastDamage = 0
         this.blastRadius = 0;
         this.blastPush = 0;
+        this.selectedAngle = 0
         this.targets = []
         this.drones = []
         this.droneSpawner = {
@@ -43,18 +47,29 @@ export class Tower {
             tur.AVAILABLE_TARGETS = []
             tur.SIZE *= (this.size/10)
         })
+        this.blastSizeFactor = Math.min(4.5, Math.max(1, 1.1*(this.level-1)))
     }
     miscUpdate(uran) {
         uran += this.uraniumProd.amount
     }
+    upgrade() {
+        this.level += 1
+        this.blastSizeFactor = Math.min(4.5, Math.max(1, 1.1*(this.level-1)))
+    }
     update() {
+        if (this.selected) {
+            this.selectedAngle += 0.04
+        }
         if (this.droneSpawner.canSpawn) {
             if (this.drones.length < this.droneSpawner.maxDrones) {
-                this.droneSpawner.interval--
+                this.droneSpawner.interval++
             }
-            if (this.droneSpawner.interval == 0) {
-                this.droneSpawner.interval = this.droneSpawner.maxInterval
+            if (this.droneSpawner.interval >= this.droneSpawner.maxInterval) {
+                this.droneSpawner.interval = 0
                 let drone = new Drone(this.x, this.y, 25, this)
+                drone.maxHealth *= Math.max(1, 2*(this.level-1))
+                drone.bodyDamage *= Math.max(1, 2*(this.level-1))
+                drone.turret.STATS[0] *= Math.max(1, 2*(this.level-1))
                 this.drones.push(drone)
                 world.DRONES.push(drone)
             }
@@ -63,19 +78,19 @@ export class Tower {
             this.blastReload++
             if (this.blastReload >= this.blastMaxReload) {
                 this.blastReload = 0
-                let shockwave = new Shockwave(this.x, this.y, this.size, this.size*this.blastRadius)
+                let shockwave = new Shockwave(this.x, this.y, this.size, this.size*this.blastRadius*this.blastSizeFactor)
                 world.BULLETS.push(shockwave)
                 world.ENEMIES.forEach((e) => {
                     let dx = e.x - this.x
                     let dy = e.y - this.y
-                    let blastSize = this.size*this.blastRadius
+                    let blastSize = this.size*this.blastRadius*this.blastSizeFactor
                     let r = e.size + blastSize
                     let dist = dx*dx+dy*dy
                     let angle = Math.atan2(dy, dx)
                     if (dist <= r*r) {
                         e.vel.x += (this.blastPush) * Math.cos(angle)
                         e.vel.y += (this.blastPush) * Math.sin(angle)
-                        e.health -= this.blastDamage
+                        e.health -= this.blastDamage*Math.max(1, 2*(this.level-1))
                     }
                 })
             }
@@ -121,7 +136,7 @@ export class Tower {
                     x: tur.STATS[1] * Math.cos(degreesToRads(tur.ANGLE)),
                     y: tur.STATS[1] * Math.sin(degreesToRads(tur.ANGLE))
                 }
-                let bullet = new Bullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0], tur.BULLET_COL)
+                let bullet = new Bullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
                 world.BULLETS.push(bullet)
             }
         })
@@ -133,6 +148,17 @@ export class Tower {
             ctx.strokeStyle = "rgb(0, 255, 0)"
             ctx.lineWidth = 3
             ctx.arc(this.x, this.y, this.size*2 + this.size*Math.sin(this.t), 0, Math.PI*2)
+            ctx.fill()
+            ctx.stroke()
+            ctx.closePath()
+        }
+
+        if (this.blastDamage > 0 && this.showAura) {
+            ctx.beginPath()
+            ctx.lineWidth = 3
+            ctx.fillStyle = "rgba(255, 0, 0, 0.1)"
+            ctx.strokeStyle = "rgb(255, 0, 0)"
+            ctx.arc(this.x, this.y, this.size*this.blastRadius*this.blastSizeFactor, 0, Math.PI*2)
             ctx.fill()
             ctx.stroke()
             ctx.closePath()
@@ -153,6 +179,20 @@ export class Tower {
         ctx.fill()
         ctx.stroke()
         ctx.closePath()
+        
+        if (this.selected) {
+            ctx.save()
+            ctx.translate(this.x, this.y)
+            ctx.rotate(this.selectedAngle)
+            ctx.beginPath()
+            ctx.lineWidth = 1
+            ctx.setLineDash([6, 8])
+            ctx.strokeStyle = "rgb(255, 255, 255)"
+            ctx.arc(0, 0, this.size*1.1, 0, Math.PI*2)
+            ctx.stroke()
+            ctx.closePath()
+            ctx.restore()
+        }
 
         this.turrets.forEach((tur) => {
             let turPos = [this.x+tur.POSITION[0], this.y+tur.POSITION[1]]

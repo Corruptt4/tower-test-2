@@ -19,6 +19,7 @@ export class TowerButton {
         this.turretAngle += 1
     }
     draw() {
+        let towerLevel = this.clonedTower.level
         ctx.save()
         ctx.beginPath()
         ctx.lineWidth = 10
@@ -82,17 +83,17 @@ export class TowerButton {
             }
             ctx.fillStyle = "rgb(255, 50, 50)"
             if (!this.clonedTower.droneSpawner.canSpawn) {
-                ctx.strokeText(this.clonedTower.blastDamage > 0 ? "Blast Damage: " + averageDamage : "Avg. Damage: " + averageDamage, tabX+10, tabY+this.tabHeight-15)
-                ctx.fillText(this.clonedTower.blastDamage > 0 ? "Blast Damage: " + averageDamage : "Avg. Damage: " + averageDamage, tabX+10, tabY+this.tabHeight-15)
+                ctx.strokeText(this.clonedTower.blastDamage > 0 ? "Blast Damage: " + averageDamage*Math.max(1, 2*(towerLevel-1)) : "Avg. Damage: " + averageDamage*Math.max(1, 2*(towerLevel-1)), tabX+10, tabY+this.tabHeight-15)
+                ctx.fillText(this.clonedTower.blastDamage > 0 ? "Blast Damage: " + averageDamage*Math.max(1, 2*(towerLevel-1)) : "Avg. Damage: " + averageDamage*Math.max(1, 2*(towerLevel-1)), tabX+10, tabY+this.tabHeight-15)
             }
             if (this.clonedTower.droneSpawner.canSpawn) {
-                ctx.strokeText("Drone Bullet Damage: " + this.clonedTower.droneSpawner.droneStats[0], tabX+10, tabY+this.tabHeight-15)
-                ctx.fillText("Drone Bullet Damage: " + this.clonedTower.droneSpawner.droneStats[0], tabX+10, tabY+this.tabHeight-15)
-                ctx.strokeText("Drone Body Damage: " + this.clonedTower.droneSpawner.droneStats[3], tabX+10, tabY+this.tabHeight-40)
-                ctx.fillText("Drone Body Damage: " + this.clonedTower.droneSpawner.droneStats[3], tabX+10, tabY+this.tabHeight-40)
+                ctx.strokeText("Drone Bullet Damage: " + this.clonedTower.droneSpawner.droneStats[0]*Math.max(1, 2*(towerLevel-1)), tabX+10, tabY+this.tabHeight-15)
+                ctx.fillText("Drone Bullet Damage: " + this.clonedTower.droneSpawner.droneStats[0]*Math.max(1, 2*(towerLevel-1)), tabX+10, tabY+this.tabHeight-15)
+                ctx.strokeText("Drone Body Damage: " + this.clonedTower.droneSpawner.droneStats[3]*Math.max(1, 2*(towerLevel-1)), tabX+10, tabY+this.tabHeight-40)
+                ctx.fillText("Drone Body Damage: " + this.clonedTower.droneSpawner.droneStats[3]*Math.max(1, 2*(towerLevel-1)), tabX+10, tabY+this.tabHeight-40)
                 ctx.fillStyle = "rgb(50, 255, 50)"
-                ctx.strokeText("Drone Health: " + this.clonedTower.droneSpawner.droneStats[2], tabX+10, tabY+this.tabHeight-65)
-                ctx.fillText("Drone Health: " + this.clonedTower.droneSpawner.droneStats[2], tabX+10, tabY+this.tabHeight-65)
+                ctx.strokeText("Drone Health: " + this.clonedTower.droneSpawner.droneStats[2]*Math.max(1, 2*(towerLevel-1)), tabX+10, tabY+this.tabHeight-65)
+                ctx.fillText("Drone Health: " + this.clonedTower.droneSpawner.droneStats[2]*Math.max(1, 2*(towerLevel-1)), tabX+10, tabY+this.tabHeight-65)
                 ctx.fillStyle = "rgb(255, 255, 255)"
                 ctx.strokeText("Drone Reload: " + (this.clonedTower.droneSpawner.droneStats[4]/60).toFixed(3)+"s", tabX+10, tabY+this.tabHeight-90)
                 ctx.fillText("Drone Reload: " + (this.clonedTower.droneSpawner.droneStats[4]/60).toFixed(3)+"s", tabX+10, tabY+this.tabHeight-90)
