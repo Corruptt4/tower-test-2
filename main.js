@@ -60,6 +60,10 @@ let minimap = new MiniMap(250)
 
 document.addEventListener("keydown", (e) => {
     keys[e.keyCode] = true
+    if (e.keyCode == 84 && world.PLACEHOLDER.length > 0) {
+        console.log("Deselected")
+        world.PLACEHOLDER.splice(0, 1)
+    }
 })
 document.addEventListener("keyup", (e) => {
     keys[e.keyCode] = false
@@ -182,14 +186,13 @@ document.addEventListener("mousedown", (e) => {
                     towToPlace.droneSpawner = structuredClone(b.clonedTower.droneSpawner)
                     towToPlace.level = b.clonedTower.level
                     world.PLACEHOLDER.push([towToPlace, b.cost])
-                    console.log(towToPlace)
                     break;
                 }
             }
         }
     }
 })
-const camera = new Camera(mapSize/2, mapSize/2)
+export const camera = new Camera(mapSize/2, mapSize/2)
 setInterval(() => {
     shownFPS = fps
     fps = 0
@@ -223,11 +226,11 @@ let collisionUpdate = setInterval(() => {
             let dx = e1.x - e2.x
             let dy = e1.y - e2.y
             let angle = getAngle(dx, dy)
-            e1.vel.x += 2*Math.cos(angle)
-            e1.vel.y += 2*Math.sin(angle)
+            e1.vel.x += 1*Math.cos(angle)
+            e1.vel.y += 1*Math.sin(angle)
             
-            e2.vel.x -= 2*Math.cos(angle)
-            e2.vel.y -= 2*Math.sin(angle)
+            e2.vel.x -= 1*Math.cos(angle)
+            e2.vel.y -= 1*Math.sin(angle)
         }
         if ((e1.type == "drone" && e2.type == "enemy") || (e1.type == "enemy" && e2.type == "drone")) {
             let enemy = e1.type === "enemy" ? e1 : e2
@@ -327,9 +330,11 @@ function render() {
     resize()
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     // spatialHash.draw()
+    camera.x = Math.max(canvas.width/2, Math.min(camera.x, mapSize-canvas.width/2))
+    camera.y = Math.max(canvas.height/2, Math.min(camera.y, mapSize-canvas.height/2))
     ctx.save()
     camera.apply()
-    makeGrid(90)
+    makeGrid(mapSize/50)
     world.BULLETS.forEach((e) => {
         e.draw()
     })

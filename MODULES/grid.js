@@ -5,11 +5,11 @@ export function makeGrid(cellSize) {
     let startY = 0
     ctx.beginPath()
     ctx.strokeStyle = "rgb(90, 90, 90)"
-    for (let x = startX; x < mapSize; x+= cellSize) {
+    for (let x = startX; x <= mapSize; x+= cellSize) {
         ctx.moveTo(x, startY)
         ctx.lineTo(x, mapSize)
     }
-    for (let y = startX; y < mapSize; y+= cellSize) {
+    for (let y = startX; y <= mapSize; y+= cellSize) {
         ctx.moveTo(startX, y)
         ctx.lineTo(mapSize, y)
     }

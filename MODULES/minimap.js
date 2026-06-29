@@ -1,4 +1,4 @@
-import { canvas, ctx, mapSize, shownFPS } from "../main.js"
+import { canvas, ctx, mapSize, shownFPS, camera } from "../main.js"
 
 export class MiniMap {
     constructor(size) {
@@ -16,6 +16,17 @@ export class MiniMap {
         ctx.roundRect(this.x, this.y, this.size, this.size)
         ctx.fill()
         ctx.stroke()
+        ctx.closePath()
+
+        ctx.beginPath()
+        ctx.lineWidth = 3
+        ctx.strokeStyle = "white"
+        ctx.strokeRect(
+            this.x+(camera.x-window.innerWidth*camera.zoom/2)*this.downScale, 
+            this.y+(camera.y-window.innerHeight*camera.zoom/2)*this.downScale, 
+            window.innerWidth*camera.zoom*this.downScale, 
+            window.innerHeight*camera.zoom*this.downScale
+        )
         ctx.closePath()
         
         ctx.beginPath()

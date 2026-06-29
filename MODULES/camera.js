@@ -11,6 +11,7 @@ export class Camera {
     follow() {
         this.x2 += (this.x - this.x2) * 0.05
         this.y2 += (this.y - this.y2) * 0.05
+
     }
     apply() {
         ctx.translate(canvas.width/2, canvas.height/2)

@@ -1,4 +1,4 @@
-import {darkenRGB, degreesToRads, getAngle, getDist, minMax, randomElement} from "../functions.js"
+import {darkenRGB, degreesToRads, drawPolygon, getAngle, getDist, minMax, randomElement} from "../functions.js"
 import { ctx, world } from "../../main.js";
 import { Bullet, Shockwave } from "./bullet.js";
 import { Drone } from "./drone.js";
@@ -27,6 +27,7 @@ export class Tower {
         this.selectedAngle = 0
         this.targets = []
         this.drones = []
+        this.hangarSpin = 0
         this.droneSpawner = {
             canSpawn: false,
             maxDrones: 0,
@@ -57,6 +58,9 @@ export class Tower {
         this.blastSizeFactor = Math.min(4.5, Math.max(1, 1.1*(this.level-1)))
     }
     update() {
+        if (this.droneSpawner.canSpawn) {
+            this.hangarSpin += 0.12
+        }
         if (this.selected) {
             this.selectedAngle += 0.04
         }
@@ -188,7 +192,33 @@ export class Tower {
             ctx.lineWidth = 1
             ctx.setLineDash([6, 8])
             ctx.strokeStyle = "rgb(255, 255, 255)"
-            ctx.arc(0, 0, this.size*1.1, 0, Math.PI*2)
+            ctx.arc(0, 0, this.size*1.2, 0, Math.PI*2)
+            ctx.stroke()
+            ctx.closePath()
+            ctx.restore()
+        }
+
+
+        if (this.droneSpawner.canSpawn) {
+            ctx.save()
+            ctx.translate(this.x, this.y)
+            ctx.rotate(this.hangarSpin)
+            
+            for (let i = 0, s = 4; i < s; i++) {
+                ctx.rotate((Math.PI * 2)/s * i)
+                ctx.beginPath()
+                ctx.fillStyle = "rgb(100, 100, 100)"
+                ctx.strokeStyle = "rgb(80, 80, 80)"
+                ctx.roundRect(0, -this.size/4, this.size*2, this.size/2, 8)
+                ctx.fill()
+                ctx.stroke()
+                ctx.closePath()
+            }
+            ctx.beginPath()
+            ctx.fillStyle = "rgb(80, 80, 80)"
+            ctx.strokeStyle = "rgb(60, 60, 60)"
+            ctx.arc(0,  0, this.size/2, 0, Math.PI * 2)
+            ctx.fill()
             ctx.stroke()
             ctx.closePath()
             ctx.restore()
@@ -235,6 +265,7 @@ export class TowerPlaceholder {
         this.color = "rgb(0, 255, 0)";
         this.savedColor = "rgb(130, 130, 130)";
         this.savedTurretData = []
+        this.hangarSpin = 0
         this.turrets.forEach((tur) => {
             tur.TARGET = null
             tur.TARGETS = []
@@ -245,6 +276,9 @@ export class TowerPlaceholder {
         })
     }
     update() {
+        if (this.droneSpawner.canSpawn) {
+            this.hangarSpin += 0.12
+        }
         this.turrets.forEach((tur) => {
             tur.ANGLE += 360*0.003
         })
@@ -258,6 +292,31 @@ export class TowerPlaceholder {
         ctx.fill()
         ctx.stroke()
         ctx.closePath()
+
+        if (this.droneSpawner.canSpawn) {
+            ctx.save()
+            ctx.translate(this.x, this.y)
+            ctx.rotate(this.hangarSpin)
+            
+            for (let i = 0, s = 4; i < s; i++) {
+                ctx.rotate((Math.PI * 2)/s * i)
+                ctx.beginPath()
+                ctx.fillStyle = "rgb(0, 255, 0)"
+                ctx.strokeStyle = "rgb(0, 235, 0)"
+                ctx.roundRect(0, -this.size/4, this.size*2, this.size/2, 8)
+                ctx.fill()
+                ctx.stroke()
+                ctx.closePath()
+            }
+            ctx.beginPath()
+            ctx.fillStyle = "rgb(0, 255, 0)"
+            ctx.strokeStyle = "rgb(0, 235, 0)"
+            ctx.arc(0,  0, this.size/2, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.stroke()
+            ctx.closePath()
+            ctx.restore()
+        }
 
         this.turrets.forEach((tur) => {
             let turPos = [this.x+tur.POSITION[0], this.y+tur.POSITION[1]]
