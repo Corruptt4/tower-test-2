@@ -350,6 +350,7 @@ function render() {
     })
     world.ENEMIES.forEach((e) => {
         e.draw()
+        e.drawHPBar()
     })
     world.TOWERS.forEach((e) => {
         e.draw()

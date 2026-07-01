@@ -1,5 +1,7 @@
 import { world, ctx, mapSize } from "../main.js";
 import { Enemy } from "./ENTITIES/enemy.js";
+import { randomElement } from "./functions.js";
+import { enemyStorage } from "./STORAGE/enemies.js"
 
 export class WaveHandler {
     constructor(startWave) {
@@ -16,10 +18,22 @@ export class WaveHandler {
     startWave() {
         this.waveTimer = 0
         this.enemiesToSpawn = []
+        // for (let i = 0; i < 10+3*(this.wave); i++) {
+        //     let enemy = new Enemy(Math.random()*mapSize, Math.random()*mapSize, 30, 100*(1.5*(this.wave)), 10*(1.5*(this.wave)))
+        //     enemy.towers = world.TOWERS
+        //     enemy.reward = 10+(10*2*(this.wave-1))
+        //     this.enemiesToSpawn.push(enemy)
+        // }
         for (let i = 0; i < 10+3*(this.wave); i++) {
-            let enemy = new Enemy(Math.random()*mapSize, Math.random()*mapSize, 30, 100*(1.5*(this.wave)), 10*(1.5*(this.wave)))
+            let specificEnemy = enemyStorage[randomElement(enemyStorage)]
+            let enemy = new enemyStorage[randomElement(enemyStorage)].constructor(
+                Math.random()*mapSize, Math.random()*mapSize,
+                specificEnemy.size,
+                specificEnemy.health*(1.5*(this.wave)),
+                specificEnemy.damage*(1.5*(this.wave))
+            )
             enemy.towers = world.TOWERS
-            enemy.reward = 10+(10*2*(this.wave-1))
+            enemy.reward = (10*enemy.extraRewardFactor)+(10*2*(this.wave-1))
             this.enemiesToSpawn.push(enemy)
         }
 

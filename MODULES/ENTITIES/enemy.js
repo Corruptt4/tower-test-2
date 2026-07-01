@@ -13,8 +13,10 @@ export class Enemy {
         this.color = "rgb(0, 110, 0)";
         this.type = "enemy";
         this.isBoss = false;
+        this.extraRewardFactor = 1
         this.speed = 0.2;
         this.reward = 10;
+        this.knockbackResistance = 0 // 0%
         this.vel = {
             x: 0,
             y: 0
@@ -46,8 +48,6 @@ export class Enemy {
     }
 
     draw() {
-        if (this.health < 0) this.health = 0;
-        this.oldHealth += (this.health - this.oldHealth)*0.03
         ctx.beginPath()
         ctx.fillStyle = this.color
         ctx.strokeStyle = darkenRGB(this.color)
@@ -56,7 +56,10 @@ export class Enemy {
         ctx.fill()
         ctx.stroke()
         ctx.closePath()
-
+    }
+    drawHPBar() {
+        if (this.health < 0) this.health = 0;
+        this.oldHealth += (this.health - this.oldHealth)*0.03
         ctx.beginPath()
         ctx.strokeStyle = "black"
         ctx.lineWidth = 5
