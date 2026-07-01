@@ -222,7 +222,7 @@ let collisionUpdate = setInterval(() => {
             enemy.vel.y -= 2*Math.sin(angle)
             return
         }
-        if (e1.type == "drone" && e2.type == "drone") {
+        if (e1.type == "drone" && e2.type == "drone" && e1.host === e2.host) {
             let dx = e1.x - e2.x
             let dy = e1.y - e2.y
             let angle = getAngle(dx, dy)
@@ -243,6 +243,8 @@ let collisionUpdate = setInterval(() => {
             
             drone.vel.x -= 2*Math.cos(angle)
             drone.vel.y -= 2*Math.sin(angle)
+            enemy.health -= drone.bodyDamage
+            drone.health -= enemy.damage
         }
         if (e1.type == "enemy" && e2.type == "enemy") {
             let dx = e1.x - e2.x
@@ -259,7 +261,7 @@ let collisionUpdate = setInterval(() => {
 }, 1000/10)
 
 let update =  setInterval(() => {
-    world.ENTITIES = world.TOWERS.concat(world.ENEMIES).concat(world.BULLETS).concat(world.DRONES)
+    world.DRONES = []
     if (keys[87] || keys[38]) {
         camera.y -= SPEED
     }
@@ -287,11 +289,19 @@ let update =  setInterval(() => {
         if (tow.health <= 0) {
             removeElement(tow, world.TOWERS)
         }
+        tow.drones.forEach((drone) => {
+            world.DRONES.push(drone)
+        })
     })
     world.DRONES.forEach((drone) => {
         drone.update()
         drone.targets = world.ENEMIES
+
+        if (drone.health <= 0) {
+            removeElement(drone, drone.host.drones)
+        }
     })
+    world.ENTITIES = world.TOWERS.concat(world.ENEMIES).concat(world.BULLETS).concat(world.DRONES)
     world.ENEMIES.forEach((enemy) => {
         if (enemy.health <= 0) {
             uranium += enemy.reward

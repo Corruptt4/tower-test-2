@@ -75,7 +75,6 @@ export class Tower {
                 drone.bodyDamage *= Math.max(1, 2*(this.level-1))
                 drone.turret.STATS[0] *= Math.max(1, 2*(this.level-1))
                 this.drones.push(drone)
-                world.DRONES.push(drone)
             }
         }
         if (this.blastMaxReload > 0) {

@@ -139,5 +139,27 @@ export class Drone {
         ctx.stroke()
         ctx.closePath()
         ctx.restore()
+
+        ctx.save()
+        ctx.translate(this.x, this.y)
+        ctx.beginPath()
+        ctx.fillStyle = "black"
+        ctx.roundRect(-this.size, this.size+10, this.size*2, 5, 5)
+        ctx.fill()
+        ctx.closePath()
+        
+        ctx.beginPath()
+        ctx.fillStyle = "rgb(0, 255, 0)"
+        ctx.roundRect(-this.size, this.size+10, this.size*2*(this.health/this.maxHealth), 5, 5)
+        ctx.fill()
+        ctx.closePath()
+
+        ctx.beginPath()
+        ctx.strokeStyle = "black"
+        ctx.lineWidth = 2
+        ctx.roundRect(-this.size, this.size+10, this.size*2, 5, 5)
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
     }
 }
