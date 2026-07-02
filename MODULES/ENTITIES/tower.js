@@ -91,8 +91,8 @@ export class Tower {
                     let dist = dx*dx+dy*dy
                     let angle = Math.atan2(dy, dx)
                     if (dist <= r*r) {
-                        e.vel.x += (this.blastPush) * Math.cos(angle)
-                        e.vel.y += (this.blastPush) * Math.sin(angle)
+                        e.vel.x += (this.blastPush-(this.blastPush*e.knockbackResistance)) * Math.cos(angle)
+                        e.vel.y += (this.blastPush-(this.blastPush*e.knockbackResistance)) * Math.sin(angle)
                         e.health -= this.blastDamage*Math.max(1, 2*(this.level-1))
                     }
                 })
@@ -159,11 +159,9 @@ export class Tower {
         if (this.blastDamage > 0 && this.showAura) {
             ctx.beginPath()
             ctx.lineWidth = 3
-            ctx.fillStyle = "rgba(255, 0, 0, 0.1)"
-            ctx.strokeStyle = "rgb(255, 0, 0)"
+            ctx.fillStyle = "rgba(255, 0, 0, 0.03)"
             ctx.arc(this.x, this.y, this.size*this.blastRadius*this.blastSizeFactor, 0, Math.PI*2)
             ctx.fill()
-            ctx.stroke()
             ctx.closePath()
         }
 

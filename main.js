@@ -61,7 +61,6 @@ let minimap = new MiniMap(250)
 document.addEventListener("keydown", (e) => {
     keys[e.keyCode] = true
     if (e.keyCode == 84 && world.PLACEHOLDER.length > 0) {
-        console.log("Deselected")
         world.PLACEHOLDER.splice(0, 1)
     }
 })

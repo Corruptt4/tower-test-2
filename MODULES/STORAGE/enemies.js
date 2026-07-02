@@ -12,7 +12,7 @@ export class NormalEnemy extends Enemy {
         ctx.beginPath()
         ctx.lineWidth = 3
         ctx.fillStyle = this.color
-        ctx.strokeStyle = darkenRGB(this.color, 130)
+        ctx.strokeStyle = darkenRGB(this.color)
         ctx.arc(this.x, this.y, this.size, 0, Math.PI*2)
         ctx.fill()
         ctx.stroke()
@@ -44,6 +44,8 @@ export class ArmoredEnemy extends Enemy {
         ctx.strokeStyle = darkenRGB(this.armorColor)
         ctx.moveTo(this.x, this.y)
         ctx.arc(this.x, this.y, this.size, 0, Math.PI*1.5)
+        ctx.moveTo(this.x, this.y)
+        ctx.lineTo(this.x, this.y-this.size)
         ctx.fill()
         ctx.stroke()
         ctx.closePath()
