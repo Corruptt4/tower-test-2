@@ -19,6 +19,24 @@ export class NormalEnemy extends Enemy {
         ctx.closePath()
     }
 }
+export class BigEnemy extends Enemy {
+    constructor(x, y, size, health, damage) {
+        super(x, y, size, health, damage)
+        this.color = "rgb(0, 100, 0)"
+        this.knockbackResistance = 0.4
+        this.extraRewardFactor = 1.85
+    }
+    draw() {
+        ctx.beginPath()
+        ctx.lineWidth = 3
+        ctx.fillStyle = this.color
+        ctx.strokeStyle = darkenRGB(this.color)
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI*2)
+        ctx.fill()
+        ctx.stroke()
+        ctx.closePath()
+    }
+}
 
 export class ArmoredEnemy extends Enemy {
     constructor(x, y, size, health, damage) {
@@ -53,6 +71,7 @@ export class ArmoredEnemy extends Enemy {
 }
 
 export let enemyStorage = [
-    new NormalEnemy(0, 0, 30, 100, 10),
-    new ArmoredEnemy(0, 0, 30, 200, 5)
+    [new NormalEnemy(0, 0, 30, 100, 10), 1],
+    [new ArmoredEnemy(0, 0, 30, 200, 5), 0.2],
+    [new BigEnemy(0, 0, 45, 500, 5), 0.08]
 ]

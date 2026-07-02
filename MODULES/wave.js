@@ -25,16 +25,24 @@ export class WaveHandler {
         //     this.enemiesToSpawn.push(enemy)
         // }
         for (let i = 0; i < 10+3*(this.wave); i++) {
-            let specificEnemy = enemyStorage[randomElement(enemyStorage)]
-            let enemy = new enemyStorage[randomElement(enemyStorage)].constructor(
-                Math.random()*mapSize, Math.random()*mapSize,
-                specificEnemy.size,
-                specificEnemy.health*(1.5*(this.wave)),
-                specificEnemy.damage*(1.5*(this.wave))
-            )
-            enemy.towers = world.TOWERS
-            enemy.reward = (10*enemy.extraRewardFactor)+(10*2*(this.wave-1))
-            this.enemiesToSpawn.push(enemy)
+            let rng = Math.random()
+            let specificEnemy
+            let enemy
+            for (let i = enemyStorage.length-1; i >= 0; i--) {
+                if (enemyStorage[i][1] >= rng) {
+                    specificEnemy = enemyStorage[i][0]
+                    enemy = new enemyStorage[i][0].constructor(
+                        Math.random()*mapSize, Math.random()*mapSize,
+                        specificEnemy.size,
+                        specificEnemy.health*(1.5*(this.wave)),
+                        specificEnemy.damage*(1.5*(this.wave))
+                            )
+                    enemy.towers = world.TOWERS
+                    enemy.reward = (10*enemy.extraRewardFactor)+(10*2*(this.wave-1))
+                    this.enemiesToSpawn.push(enemy)
+                    break;
+                }
+            }
         }
 
         this.enemyTickSpawn = this.enemiesToSpawn.length/2
