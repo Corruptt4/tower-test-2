@@ -28,15 +28,16 @@ export class WaveHandler {
             let rng = Math.random()
             let specificEnemy
             let enemy
-            for (let i = enemyStorage.length-1; i >= 0; i--) {
-                if (enemyStorage[i][1] >= rng) {
-                    specificEnemy = enemyStorage[i][0]
-                    enemy = new enemyStorage[i][0].constructor(
+            let spawnableEnemies = enemyStorage.filter((e) => this.wave >= e[2])
+            for (let i = spawnableEnemies.length-1; i >= 0; i--) {
+                if (spawnableEnemies[i][1] >= rng) {
+                    specificEnemy = spawnableEnemies[i][0]
+                    enemy = new spawnableEnemies[i][0].constructor(
                         Math.random()*mapSize, Math.random()*mapSize,
                         specificEnemy.size,
                         specificEnemy.health*(1.5*(this.wave)),
                         specificEnemy.damage*(1.5*(this.wave))
-                            )
+                    )
                     enemy.towers = world.TOWERS
                     enemy.reward = (10*enemy.extraRewardFactor)+(10*2*(this.wave-1))
                     this.enemiesToSpawn.push(enemy)

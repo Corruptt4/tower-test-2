@@ -46,7 +46,7 @@ export class Enemy {
         this.vel.x *= frictionFactor
         this.vel.y *= frictionFactor
     }
-
+    onDeath(world) { }
     draw() {
         ctx.beginPath()
         ctx.fillStyle = this.color

@@ -304,6 +304,7 @@ let update =  setInterval(() => {
     world.ENEMIES.forEach((enemy) => {
         if (enemy.health <= 0) {
             uranium += enemy.reward
+            enemy.onDeath(world)
             removeElement(enemy, world.ENEMIES)
         }
     })
