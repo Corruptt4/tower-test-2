@@ -6,3 +6,7 @@
 - `towerPlaceBTN.js` - This is the button that places the specific tower, which has tower stats (on specific levels)
 
 ## If you want to change game settings and have fun with it, you can change some settings in `settings.js`
+
+## Bullet types:
+### 1 - Normal
+### 2 - Bomb

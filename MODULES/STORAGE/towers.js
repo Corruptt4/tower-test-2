@@ -1,4 +1,5 @@
 import { Tower } from "../ENTITIES/tower.js"
+import { BombBullet } from "../ENTITIES/bullet.js"
 
 class BasicTower extends Tower {
     constructor(x, y, name, color, size, turrets) {
@@ -126,6 +127,36 @@ class DestroyerTower extends Tower {
         ]
     }
 }
+class BomberTower extends Tower {
+    constructor(x, y, name, color, size, turrets) {
+        super(x, y, name, color, size, turrets)
+        this.health = 2500
+        this.name = "Bomber"
+        this.bulletType = 2
+        this.description = "It shoots bullets that explode."
+        this.savedColor = "rgb(130, 130, 130)"
+    }
+
+    innitTurrets() {
+        this.turrets = [
+            {
+                POSITION: [0, 0],
+                SIZE: 7,
+                STATS: [ 80, 20 ],
+                ANGLE: 0,
+                COLOR: "rgb(110, 110, 110)",
+                GUN_COL: "rgb(100, 100, 100)",
+                WIDTH: 20,
+                HEIGHT: 30,
+                BULLET: 2,
+                CAN_SHOOT: true,
+                BULLET_COL: "rgb(120, 120, 120)",
+                MAX_RELOAD: 70,
+                RELOAD: 0
+            },
+        ]
+    }
+}
 class BlastTower extends Tower {
     constructor(x, y, name, color, size, turrets) {
         super(x, y, name, color, size, turrets)
@@ -215,6 +246,8 @@ let destroyerTower = new DestroyerTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 destroyerTower.innitTurrets()
 let tripletTower = new TripletTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 tripletTower.innitTurrets()
+let bomberTower = new BomberTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
+bomberTower.innitTurrets()
 let producerTower = new ProducerTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 let blastTower = new BlastTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 let droneTower = new DroneTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
@@ -228,5 +261,6 @@ export let towers = [
     [tripletTower, 100],
     [producerTower, 150],
     [blastTower, 450],
-    [droneTower, 100]
+    [droneTower, 100],
+    [bomberTower, 500]
 ]

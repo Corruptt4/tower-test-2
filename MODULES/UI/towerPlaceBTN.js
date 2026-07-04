@@ -78,6 +78,9 @@ export class TowerButton {
                 })
                 averageDamage /= this.clonedTower.turrets.length
             }
+            if (this.clonedTower.bulletType == 2) {
+                averageDamage *= 10
+            }
             if (this.clonedTower.blastDamage > 0) {
                 averageDamage = this.clonedTower.blastDamage
             }

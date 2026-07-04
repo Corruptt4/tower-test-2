@@ -1,6 +1,6 @@
 import {darkenRGB, degreesToRads, drawPolygon, getAngle, getDist, minMax, randomElement} from "../functions.js"
 import { ctx, world } from "../../main.js";
-import { Bullet, Shockwave } from "./bullet.js";
+import { Bullet, BombBullet, Shockwave } from "./bullet.js";
 import { Drone } from "./drone.js";
 
 export class Tower {
@@ -28,6 +28,7 @@ export class Tower {
         this.targets = []
         this.drones = []
         this.hangarSpin = 0
+        this.bulletTye = 1
         this.droneSpawner = {
             canSpawn: false,
             maxDrones: 0,
@@ -139,7 +140,20 @@ export class Tower {
                     x: tur.STATS[1] * Math.cos(degreesToRads(tur.ANGLE)),
                     y: tur.STATS[1] * Math.sin(degreesToRads(tur.ANGLE))
                 }
-                let bullet = new Bullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
+                let bullet
+                switch (this.bulletType) {
+                    case 1: {
+                        bullet = new Bullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
+                        break;
+                    }
+                    case 2: {
+                        bullet = new BombBullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
+                        break;
+                    }
+                    default: {
+                        bullet = new Buillet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
+                    }
+                }
                 world.BULLETS.push(bullet)
             }
         })
