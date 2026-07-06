@@ -1,5 +1,7 @@
-import { Tower } from "../ENTITIES/tower.js"
-import { BombBullet } from "../ENTITIES/bullet.js"
+import { Tower } from "../DEFINITIONS/tower.js"
+import { BombBullet } from "../DEFINITIONS/bullet.js"
+import { ctx } from "../../main.js"
+import { darkenRGB } from "../functions.js"
 
 class BasicTower extends Tower {
     constructor(x, y, name, color, size, turrets) {
@@ -173,6 +175,43 @@ class BlastTower extends Tower {
     }
 }
 
+class RadarTower extends Tower {
+    constructor(x, y, name, color, size, turrets) {
+        super(x, y, name, color, size, turrets)
+        this.health = 3500
+        this.name = "Radar"
+        this.damageBuff = 1.2
+        this.buffsDamage = true
+        this.description = "A radar that buffs damage of nearby towers by 50%."
+        this.color = "rgb(130, 130, 130)"
+        this.savedColor = "rgb(130, 130, 130)"
+    }
+    miscDraw() {
+        ctx.save()
+        ctx.translate(this.x, this.y)
+        ctx.rotate(-this.radarSpin*2)
+        ctx.beginPath()
+        ctx.lineWidth = 3
+        ctx.fillStyle = darkenRGB(this.color, -40)
+        ctx.strokeStyle = darkenRGB(this.color, -20)
+        ctx.roundRect(0, -this.size/4, this.size*15, this.size/2, 0)
+        ctx.fill()
+        ctx.stroke()
+        ctx.closePath()
+        ctx.beginPath()
+        ctx.lineWidth = 3
+        ctx.fillStyle = darkenRGB(this.color, -40)
+        ctx.strokeStyle = darkenRGB(this.color, -20)
+        ctx.arc(0, 0, this.size/2, 0, Math.PI*2)
+        ctx.fill()
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
+    }
+}
+
+// TODO: Rage tower (every second,  nearby towers have a 20% chance to send a shockwave like Blaster, unaffected by Radar.)
+
 class TripletTower extends Tower {
     constructor(x, y, name, color, size, turrets) {
         super(x, y, name, color, size, turrets)
@@ -251,6 +290,7 @@ bomberTower.innitTurrets()
 let producerTower = new ProducerTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 let blastTower = new BlastTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 let droneTower = new DroneTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
+let radarTower = new RadarTower(0, 0, "", "rgb(130, 130, 130)", 30, [])
 
 export let towers = [
     // [tower, cost]
@@ -262,5 +302,6 @@ export let towers = [
     [producerTower, 150],
     [blastTower, 450],
     [droneTower, 100],
-    [bomberTower, 500]
+    [bomberTower, 500],
+    [radarTower, 500]
 ]

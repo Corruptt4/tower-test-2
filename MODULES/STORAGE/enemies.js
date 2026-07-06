@@ -1,4 +1,4 @@
-import { Enemy } from "../ENTITIES/enemy.js";
+import { Enemy } from "../DEFINITIONS/enemy.js";
 import { ctx, canvas } from "../../main.js";
 import { darkenRGB } from "../functions.js";
 

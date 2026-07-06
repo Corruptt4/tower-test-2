@@ -1,5 +1,5 @@
 import { world, ctx, mapSize } from "../main.js";
-import { Enemy } from "./ENTITIES/enemy.js";
+import { Enemy } from "./DEFINITIONS/enemy.js";
 import { randomElement } from "./functions.js";
 import { enemyStorage } from "./STORAGE/enemies.js"
 

@@ -41,6 +41,7 @@ export class TowerButton {
         this.clonedTower.x = this.x
         this.clonedTower.y = this.y-this.size/3+15
         this.clonedTower.draw()
+        this.clonedTower.miscDraw()
 
         ctx.beginPath()
         ctx.fillStyle = "white"

@@ -22,13 +22,17 @@ export class Tower {
         this.blastMaxReload = 0
         this.blastReload = 0
         this.blastDamage = 0
+        this.affectedDamageBuff = 1
         this.blastRadius = 0;
         this.blastPush = 0;
         this.selectedAngle = 0
         this.targets = []
         this.drones = []
+        this.damageBuff = 1
+        this.buffsDamage = false
         this.hangarSpin = 0
         this.bulletTye = 1
+        this.radarSpin = 0
         this.droneSpawner = {
             canSpawn: false,
             maxDrones: 0,
@@ -59,6 +63,9 @@ export class Tower {
         this.blastSizeFactor = Math.min(4.5, Math.max(1, 1.1*(this.level-1)))
     }
     update() {
+        if (this.buffsDamage) {
+            this.radarSpin += 0.06
+        }
         if (this.droneSpawner.canSpawn) {
             this.hangarSpin += 0.12
         }
@@ -74,7 +81,7 @@ export class Tower {
                 let drone = new Drone(this.x, this.y, 25, this)
                 drone.maxHealth *= Math.max(1, 2*(this.level-1))
                 drone.bodyDamage *= Math.max(1, 2*(this.level-1))
-                drone.turret.STATS[0] *= Math.max(1, 2*(this.level-1))
+                drone.turret.STATS[0] *= this.affectedDamageBuff*Math.max(1, 2*(this.level-1))
                 this.drones.push(drone)
             }
         }
@@ -94,7 +101,7 @@ export class Tower {
                     if (dist <= r*r) {
                         e.vel.x += (this.blastPush-(this.blastPush*e.knockbackResistance)) * Math.cos(angle)
                         e.vel.y += (this.blastPush-(this.blastPush*e.knockbackResistance)) * Math.sin(angle)
-                        e.health -= this.blastDamage*Math.max(1, 2*(this.level-1))
+                        e.health -= this.blastDamage*this.affectedDamageBuff*Math.max(1, 2*(this.level-1))
                     }
                 })
             }
@@ -143,20 +150,23 @@ export class Tower {
                 let bullet
                 switch (this.bulletType) {
                     case 1: {
-                        bullet = new Bullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
+                        bullet = new Bullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*this.affectedDamageBuff*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
                         break;
                     }
                     case 2: {
-                        bullet = new BombBullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
+                        bullet = new BombBullet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*this.affectedDamageBuff*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
                         break;
                     }
                     default: {
-                        bullet = new Buillet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
+                        bullet = new Buillet(this.x+tur.POSITION[0], this.y+tur.POSITION[1], tur.WIDTH/2*(tur.SIZE/10), velocity, tur.STATS[0]*this.affectedDamageBuff*Math.max(1, 2*(this.level-1)), tur.BULLET_COL)
                     }
                 }
                 world.BULLETS.push(bullet)
             }
         })
+    }
+    miscDraw() {
+
     }
     draw() {
         if (this.uraniumProd.canProduce && this.showAura) {
@@ -276,6 +286,9 @@ export class TowerPlaceholder {
         this.color = "rgb(0, 255, 0)";
         this.savedColor = "rgb(130, 130, 130)";
         this.savedTurretData = []
+        this.damageBuff = 1
+        this.damageBuffRange = 0
+        this.buffsDamage = false
         this.hangarSpin = 0
         this.turrets.forEach((tur) => {
             tur.TARGET = null
@@ -287,12 +300,18 @@ export class TowerPlaceholder {
         })
     }
     update() {
+        if (this.buffsDamage) {
+            this.radarSpin += 0.06
+        }
         if (this.droneSpawner.canSpawn) {
             this.hangarSpin += 0.12
         }
         this.turrets.forEach((tur) => {
             tur.ANGLE += 360*0.003
         })
+    }
+    miscDraw() {
+
     }
     draw() {
         ctx.beginPath()

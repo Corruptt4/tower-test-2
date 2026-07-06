@@ -1,6 +1,6 @@
 import { Camera } from "./MODULES/camera.js"
-import { Enemy } from "./MODULES/ENTITIES/enemy.js"
-import { Tower, TowerPlaceholder } from "./MODULES/ENTITIES/tower.js"
+import { Enemy } from "./MODULES/DEFINITIONS/enemy.js"
+import { Tower, TowerPlaceholder } from "./MODULES/DEFINITIONS/tower.js"
 import { getAngle, mouseRectCollision, removeElement } from "./MODULES/functions.js"
 import { MiniMap } from "./MODULES/minimap.js"
 import { SpatialHash } from "./MODULES/PHYSICS/spatialHash.js"
@@ -9,7 +9,7 @@ import { towers } from "./MODULES/STORAGE/towers.js"
 import { TowerButton } from "./MODULES/UI/towerPlaceBTN.js"
 import { PointText } from "./MODULES/UI/pointText.js"
 import { settings } from "./MODULES/settings.js"
-import { Drone } from "./MODULES/ENTITIES/drone.js"
+import { Drone } from "./MODULES/DEFINITIONS/drone.js"
 import { makeGrid } from "./MODULES/grid.js"
 
 function resize() {
@@ -145,7 +145,10 @@ document.addEventListener("mousedown", (e) => {
                     newTower.blastPush = world.PLACEHOLDER[0][0].blastPush
                     newTower.bulletType = world.PLACEHOLDER[0][0].bulletType
                     newTower.droneSpawner = world.PLACEHOLDER[0][0].droneSpawner
+                    newTower.damageBuff = world.PLACEHOLDER[0][0].damageBuff
+                    newTower.buffsDamage = world.PLACEHOLDER[0][0].buffsDamage
                     newTower.level = world.PLACEHOLDER[0][0].level
+                    newTower.miscDraw = world.PLACEHOLDER[0][0].miscDraw
                     uranium -= cost
                     world.TOWERS.push(newTower)
                     world.PLACEHOLDER.splice(0, 1)
@@ -166,7 +169,10 @@ document.addEventListener("mousedown", (e) => {
                 newTower.blastPush = world.PLACEHOLDER[0][0].blastPush
                 newTower.bulletType = world.PLACEHOLDER[0][0].bulletType
                 newTower.droneSpawner = world.PLACEHOLDER[0][0].droneSpawner
+                newTower.damageBuff = world.PLACEHOLDER[0][0].damageBuff
+                newTower.buffsDamage = world.PLACEHOLDER[0][0].buffsDamage
                 newTower.level = world.PLACEHOLDER[0][0].level
+                newTower.miscDraw = world.PLACEHOLDER[0][0].miscDraw
                 uranium -= cost
                 world.TOWERS.push(newTower)
                 world.PLACEHOLDER.splice(0, 1)
@@ -185,8 +191,11 @@ document.addEventListener("mousedown", (e) => {
                     towToPlace.blastRadius = b.clonedTower.blastRadius
                     towToPlace.blastPush = b.clonedTower.blastPush
                     towToPlace.bulletType = b.clonedTower.bulletType
+                    towToPlace.damageBuff = b.clonedTower.damageBuff
+                    towToPlace.buffsDamage = b.clonedTower.buffsDamage
                     towToPlace.droneSpawner = structuredClone(b.clonedTower.droneSpawner)
                     towToPlace.level = b.clonedTower.level
+                    towToPlace.miscDraw = b.clonedTower.miscDraw
                     world.PLACEHOLDER.push([towToPlace, b.cost])
                     break;
                 }
@@ -283,6 +292,7 @@ let update =  setInterval(() => {
         }
     })
     world.TOWERS.forEach((tow) => {
+        let fullDamageBuff = 1
         tow.targets = world.ENEMIES
         tow.miscUpdate(uranium)
         if (tow.uraniumProd.canProduce) {
@@ -294,6 +304,11 @@ let update =  setInterval(() => {
         tow.drones.forEach((drone) => {
             world.DRONES.push(drone)
         })
+        let damageBuffers = world.TOWERS.filter((tower) => tower.buffsDamage)
+        damageBuffers.forEach((dmgBuff) => {
+            fullDamageBuff += dmgBuff.damageBuff
+        })
+        tow.affectedDamageBuff = fullDamageBuff
     })
     world.DRONES.forEach((drone) => {
         drone.update()
@@ -357,6 +372,7 @@ function render() {
     })
     world.TOWERS.forEach((e) => {
         e.draw()
+        e.miscDraw()
     })
     world.DRONES.forEach((d) => {
         d.draw()
@@ -365,6 +381,7 @@ function render() {
         e[0].x = wmx
         e[0].y = wmy
         e[0].draw()
+        e[0].miscDraw()
     })
     ctx.restore()
     minimap.x = canvas.width-minimap.size-10
@@ -372,7 +389,7 @@ function render() {
     minimap.draw()
     wave.draw()
     towerButtons.forEach((tow, index) => {
-        tow.x = (canvas.width/2)-(tow.size*1.1)*towerButtons.length/1.25+(tow.size*1.5)*(index+1)
+        tow.x = (canvas.width/2)-(tow.size*0.9)*towerButtons.length/1.25+(tow.size*1.3)*(index+1)
         tow.y = canvas.height-tow.size/1.5
         tow.draw()
     })
